@@ -1,0 +1,183 @@
+[2025-09-07T12:12:54.867Z] Error fetching weather data:
+AxiosError: Request failed with status code 401
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Function.fetchWeather (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:45:24)
+    at async func (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:35:16)
+    at async Tool.Tool.func (/Users/harshithalle/AI-Scrape/src/core/tool.ts:28:16)
+    at async Agent.chat (/Users/harshithalle/AI-Scrape/src/core/agent.ts:113:28)
+    at async <anonymous> (/Users/harshithalle/AI-Scrape/server.ts:138:22)
+
+[2025-09-07T12:16:19.648Z] Error fetching weather data:
+AxiosError: Request failed with status code 401
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Function.fetchWeather (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:45:24)
+    at async func (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:35:16)
+    at async Tool.Tool.func (/Users/harshithalle/AI-Scrape/src/core/tool.ts:28:16)
+    at async <anonymous> (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:64:18)
+
+[2025-09-07T12:20:48.032Z] Error fetching weather data:
+AxiosError: Request failed with status code 401
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Function.fetchWeather (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:46:27)
+    at async func (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:35:16)
+    at async Tool.Tool.func (/Users/harshithalle/AI-Scrape/src/core/tool.ts:28:16)
+    at async <anonymous> (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:78:18)
+
+[2025-09-07T12:21:27.589Z] Error fetching weather data:
+AxiosError: Request failed with status code 401
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Function.fetchWeather (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:46:27)
+    at async func (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:35:16)
+    at async Tool.Tool.func (/Users/harshithalle/AI-Scrape/src/core/tool.ts:28:16)
+    at async <anonymous> (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:78:18)
+
+[2025-09-07T12:27:50.424Z] Error fetching weather data:
+AxiosError: Request failed with status code 401
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Function.fetchWeather (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:46:27)
+    at async func (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:35:16)
+    at async Tool.Tool.func (/Users/harshithalle/AI-Scrape/src/core/tool.ts:28:16)
+    at async <anonymous> (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:78:18)
+
+[2025-09-07T12:35:34.778Z] Error fetching weather data:
+AxiosError: Request failed with status code 401
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Function.fetchWeather (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:46:27)
+    at async func (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:35:16)
+    at async Tool.Tool.func (/Users/harshithalle/AI-Scrape/src/core/tool.ts:28:16)
+    at async <anonymous> (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:78:18)
+
+[2025-09-07T12:37:35.134Z] Error fetching weather data:
+AxiosError: Request failed with status code 401
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Function.fetchWeather (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:46:27)
+    at async func (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:35:16)
+    at async Tool.Tool.func (/Users/harshithalle/AI-Scrape/src/core/tool.ts:28:16)
+    at async <anonymous> (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:78:18)
+
+[2025-09-07T12:44:53.252Z] Error fetching weather data:
+AxiosError: Request failed with status code 401
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Function.fetchWeather (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:46:27)
+    at async func (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:35:16)
+    at async Tool.Tool.func (/Users/harshithalle/AI-Scrape/src/core/tool.ts:28:16)
+    at async <anonymous> (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:78:18)
+
+[2025-09-07T12:55:15.089Z] Error fetching weather data:
+AxiosError: Request failed with status code 401
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Function.fetchWeather (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:46:27)
+    at async func (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:35:16)
+    at async Tool.Tool.func (/Users/harshithalle/AI-Scrape/src/core/tool.ts:28:16)
+    at async <anonymous> (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:78:18)
+
+[2025-09-07T13:02:48.095Z] Error fetching weather data:
+AxiosError: Request failed with status code 401
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Function.fetchWeather (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:46:27)
+    at async func (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:35:16)
+    at async Tool.Tool.func (/Users/harshithalle/AI-Scrape/src/core/tool.ts:28:16)
+    at async <anonymous> (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:78:18)
+
+[2025-09-07T13:07:38.137Z] Error fetching weather data:
+AxiosError: Request failed with status code 401
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Function.fetchWeather (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:46:27)
+    at async func (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:35:16)
+    at async Tool.Tool.func (/Users/harshithalle/AI-Scrape/src/core/tool.ts:28:16)
+    at async <anonymous> (/Users/harshithalle/AI-Scrape/src/tools/weatherTool.ts:78:18)
+
+[2025-09-07T13:15:02.014Z] Error fetching weather data:
+AxiosError: Request failed with status code 401
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Function.fetchWeather (/Users/harshithalle/AI-Scrape/src/tools/weatherTool1.ts:46:27)
+    at async func (/Users/harshithalle/AI-Scrape/src/tools/weatherTool1.ts:35:16)
+    at async Tool.Tool.func (/Users/harshithalle/AI-Scrape/src/core/tool.ts:28:16)
+    at async <anonymous> (/Users/harshithalle/AI-Scrape/src/tools/weatherTool1.ts:78:18)
+
+[2025-09-07T13:15:10.491Z] Error fetching weather data:
+AxiosError: Request failed with status code 401
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Function.fetchWeather (/Users/harshithalle/AI-Scrape/src/tools/weatherTool1.ts:46:27)
+    at async func (/Users/harshithalle/AI-Scrape/src/tools/weatherTool1.ts:35:16)
+    at async Tool.Tool.func (/Users/harshithalle/AI-Scrape/src/core/tool.ts:28:16)
+    at async <anonymous> (/Users/harshithalle/AI-Scrape/src/tools/weatherTool1.ts:78:18)
+
