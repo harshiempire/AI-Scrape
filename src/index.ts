@@ -5,6 +5,7 @@ import {
   OpenAILLM 
 } from "./core/index.js";
 import { MathTools } from "./tools/mathTools.js";
+import enhancedSearchTool from "./tools/enhancedSearchTool.js";
 
 async function main() {
   console.log('🤖 AI Agents Framework Demo\n');
@@ -17,18 +18,21 @@ async function main() {
     registry.register(tool);
   }
 
+  // Register enhanced search tool
+  registry.register(enhancedSearchTool);
+
   const agent = new Agent({
     llm: new OpenAILLM({ model: 'gpt-4o-mini' }),
     memory: new InMemoryMemory(),
     tools: registry,
-    system: 'You are a helpful math assistant with access to mathematical tools.',
+    system: 'You are a helpful assistant with access to mathematical tools and advanced web search capabilities. You can perform calculations and conduct deep research using both real-time and semantic search.',
     debug: true
   });
 
   console.log('Available tools:', registry.list().map(t => t.name));
   console.log();
 
-  const response1 = await agent.chat("Hi! Can you add 4, 5, 6 for me?");
+  const response1 = await agent.chat("Hi! Can you search for information about AI research workflows?");
   console.log('Response 1:', response1.text);
   console.log();
 

@@ -38,7 +38,7 @@ let defaultAgent: Agent;
 
 try {
   defaultAgent = new Agent({
-    llm: new OpenAILLM({ model: "gpt-4o-mini" }),
+    llm: new OpenAILLM({ model: "gpt-4o" }),
     memory: new InMemoryMemory(),
     tools: registry,
     system:
@@ -63,10 +63,10 @@ app.get("/api/tools", (req, res) => {
     category: tool.name.includes("calculate")
       ? "Math"
       : tool.name === "weather"
-      ? "Information"
-      : tool.name === "search"
-      ? "Information"
-      : "General",
+        ? "Information"
+        : tool.name === "search"
+          ? "Information"
+          : "General",
     status: "active" as const,
     usageCount: Math.floor(Math.random() * 20), // Mock usage count
     lastUsed: new Date(Date.now() - Math.random() * 86400000), // Random time in last 24h

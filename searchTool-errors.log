@@ -270,3 +270,21 @@ Error: read ECONNRESET
     at async Tool.Tool.func (/Users/harshithalle/AI-Scrape/src/core/tool.ts:28:16)
     at async Agent.chat (/Users/harshithalle/AI-Scrape/src/core/agent.ts:122:28)
 
+[2025-09-09T19:31:25.226Z] Error processing link https://in.bookmyshow.com/movies/hyderabad/little-hearts/ET00459285:
+AxiosError: Request failed with status code 403
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at BrotliDecompress.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:599:11)
+    at BrotliDecompress.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Function.getStaticHtml (/Users/harshithalle/AI-Scrape/src/tools/searchTool.ts:158:22)
+    at async <anonymous> (/Users/harshithalle/AI-Scrape/src/tools/searchTool.ts:100:28)
+    at async Promise.allSettled (index 7)
+    at async Function.smartFetchAndParse (/Users/harshithalle/AI-Scrape/src/tools/searchTool.ts:114:22)
+    at async Function.search (/Users/harshithalle/AI-Scrape/src/tools/searchTool.ts:71:29)
+    at async func (/Users/harshithalle/AI-Scrape/src/tools/searchTool.ts:38:27)
+    at async Tool.Tool.func (/Users/harshithalle/AI-Scrape/src/core/tool.ts:28:16)
+    at async <anonymous> (/Users/harshithalle/AI-Scrape/src/tools/searchTool.ts:170:18)
+

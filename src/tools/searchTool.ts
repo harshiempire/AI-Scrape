@@ -16,8 +16,8 @@ function logErrorToFile(message: string, error: any) {
     typeof error === "string"
       ? error
       : error instanceof Error
-      ? error.stack || error.message
-      : JSON.stringify(error, null, 2);
+        ? error.stack || error.message
+        : JSON.stringify(error, null, 2);
   const logEntry = `[${timestamp}] ${message}\n${errorMsg}\n\n`;
   try {
     fs.appendFileSync(logPath, logEntry, "utf8");
@@ -46,14 +46,14 @@ export class SearchTool {
       console.log(linksResponse);
 
       const organicResults = Array.isArray(linksResponse?.["organic_results"])
-        ? linksResponse["organic_results"]     : [];
+        ? linksResponse["organic_results"] : [];
 
       if (organicResults.length === 0) {
         throw new Error("No organic results found from search API.");
       }
 
       const links = organicResults
-        .slice(0, 2)
+        // .slice(0, 2)
         .map((item: unknown) => {
           if (
             item &&
@@ -165,10 +165,10 @@ export class SearchTool {
   }
 }
 
-// const searchTool = SearchTool.createTool();
-// (async () => {
-//   const result = await searchTool.run({ query: "Collections of Hi nanna" });
-//   console.log("Search results:", result);
-// })();
+const searchTool = SearchTool.createTool();
+(async () => {
+  const result = await searchTool.run({ query: "Mouli actor Little Hearts 2025" });
+  console.log("Search results:", result);
+})();
 
-// export default searchTool;
+export default searchTool;

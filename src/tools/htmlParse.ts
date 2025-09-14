@@ -7,25 +7,18 @@ const turndownService = new TurndownService({
   codeBlockStyle: "fenced",
 });
 
-//💡 IMPROVEMENT #1: Keep link text instead of deleting it.
-turndownService.addRule("stricterLink", {
-  filter: (node, options) => {
+//💡 IMPROVEMENT #1: Remove distracting links that are just icons or empty wrappers.
+turndownService.addRule("removeDistractingLinks", {
+  filter: (node: any, options: any) => {
     if (node.nodeName === "A" && node.getAttribute("href")) {
-      const parent = node.parentNode;
-      if (node.childNodes.length === 1 && node.firstChild?.nodeName === "IMG") {
-        return true;
-      }
-      if (
-        parent?.nodeName === "LI" &&
-        ["NAV", "ASIDE"].includes(parent.parentNode?.parentNode?.nodeName ?? "")
-      ) {
-        return true;
-      }
+      const content = node.textContent?.trim() ?? "";
+      const hasImg = node.querySelector("img") !== null;
+      // Target links that are empty or only contain an image (likely an icon).
+      return content === "" && (hasImg || node.children.length === 0);
     }
     return false;
   },
-  // The fix: return the content, not an empty string.
-  replacement: (content) => content,
+  replacement: () => "", // Remove the link entirely from the output.
 });
 
 export interface ParsedPage {
@@ -41,6 +34,7 @@ export interface ParsedPage {
 export function parseHtmlToMarkdown(html: string): ParsedPage {
   const $ = cheerio.load(html);
 
+  // --- Metadata Extraction (largely unchanged) ---
   const title = $("head > title").text().trim() || undefined;
   const description =
     $('meta[name="description"]').attr("content")?.trim() ?? undefined;
@@ -57,69 +51,72 @@ export function parseHtmlToMarkdown(html: string): ParsedPage {
   $('script[type="application/ld+json"]').each((i, el) => {
     try {
       const jsonData = JSON.parse($(el).html() || "{}");
-      // Prioritize existing data but fill in if missing
       publishDate = publishDate || jsonData.datePublished;
       author = author || jsonData.author?.name;
     } catch (e) {
-      // 💡 IMPROVEMENT #3: Log errors instead of silently ignoring them.
       if (e instanceof Error) {
         console.warn(`Skipping malformed JSON-LD: ${e.message}`);
       }
     }
   });
 
+  // 💡 IMPROVEMENT #2: Use a more comprehensive list of primary content selectors.
   const contentSelectors = [
-    "article",
-    "main",
-    ".post-content",
-    ".entry-content",
-    '[role="main"]',
-    "#content",
+    "article", ".article", ".article-content", ".article-body",
+    ".post-content", ".entry-content", "[role='article']",
+    "main", "#main", "#main-content", ".main-content", "#content",
   ];
   let $content = $(contentSelectors.join(", ")).first();
 
-  if (!$content.length || $content.text().length < 200) {
+  // If no specific content container is found, fallback to body but clean it heavily.
+  if (!$content.length || $content.text().trim().length < 200) {
     $content = $("body");
   }
 
-  // 💡 IMPROVEMENT #2: Use a more robust list of selectors to remove.
+  // 💡 IMPROVEMENT #3: Use a much more extensive and aggressive list of selectors to remove.
   const selectorsToRemove = [
-    "nav",
-    "header",
-    "footer",
-    "aside",
-    "form",
-    "script",
-    "style",
-    '[aria-hidden="true"]',
-    // Common IDs
-    "#nav",
-    "#navigation",
-    "#header",
-    "#footer",
-    "#sidebar",
-    "#comments",
-    // Common class names
-    ".nav",
-    ".navbar",
-    ".header",
-    ".footer",
-    ".sidebar",
-    ".comments",
-    ".related-posts",
-    ".advertisement",
-    ".cookie-banner",
-    ".popup",
+    // Standard clutter
+    "header", "footer", "nav", "aside", "form", "script", "style", "noscript",
+    // Common IDs and classes for non-content sections
+    "#header", "#footer", "#nav", "#sidebar", "#comments", ".header", ".footer", ".nav", ".sidebar", ".comments", ".related-posts", ".pagination",
+    // Banners, popups, and ads
+    ".cookie-banner", ".cookie-notice", ".popup", ".modal", ".ads", ".advertisement", ".ad-container",
+    // Social sharing & interactive UI
+    ".social-links", ".share-buttons", "button", '[role="button"]', '[role="navigation"]', '[role="search"]',
+    // Visually hidden or irrelevant for content
+    '[aria-hidden="true"]', '.sr-only', '.visually-hidden',
+    // Site-specific clutter (add more as needed)
+    // Wikipedia
+    ".infobox", ".navbox", ".sistersitebox", ".ambox", "#catlinks", ".mw-editsection", ".reference",
+    // IMDb
+    '[class*="RatingBar"]', '[data-testid*="recommendations"]', '.ipc-lockup-card', '.contribution-section',
   ];
+
   $content.find(selectorsToRemove.join(", ")).remove();
+
+  // 💡 IMPROVEMENT #4: Add specific pre-processing steps to clean up common issues.
+  // Remove empty elements left behind after their contents are removed.
+  $content.find("p, div, section, ul, li").each((i, el) => {
+    const $el = $(el);
+    if ($el.text().trim() === "" && $el.children().length === 0) {
+      $el.remove();
+    }
+  });
+
+  // Remove elements that are often just decorative or UI-related.
+  $content.find("svg, iframe").remove();
+
 
   const htmlContent = $content.html();
   let markdownContent = "";
 
   if (htmlContent) {
     markdownContent = turndownService.turndown(htmlContent);
-    // Clean up excessive newlines
-    markdownContent = markdownContent.replace(/(\n\s*){3,}/g, "\n\n").trim();
+    // Clean up excessive newlines and whitespace.
+    markdownContent = markdownContent
+      .replace(/(\n\s*){3,}/g, "\n\n")
+      .replace(/!\[\]\(data:image.*?\)/g, '') // Remove base64 images
+      .trim();
   }
 
   return {
