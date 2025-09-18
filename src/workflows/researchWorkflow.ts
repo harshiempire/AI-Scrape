@@ -2,6 +2,7 @@
 import { EnhancedSearchTool, SearchResult, FusedResult } from '../tools/enhancedSearchTool.js';
 import { VectorDatabaseService } from '../services/vectorDB.js';
 import { ContentChunker } from '../services/contentChunker.js';
+import { Tool } from '../core/tool.js';
 
 export interface ResearchQuery {
   query: string;
@@ -9,6 +10,7 @@ export interface ResearchQuery {
   focusAreas?: string[];
   excludeDomains?: string[];
   maxResults?: number;
+  context?: any;
 }
 
 export interface ResearchSession {
@@ -25,11 +27,14 @@ export interface ResearchSession {
 }
 
 export interface ResearchInsight {
-  type: 'trend' | 'pattern' | 'contradiction' | 'summary';
+  id?: string;
+  type: 'trend' | 'pattern' | 'contradiction' | 'summary' | 'recommendation';
   content: string;
   confidence: number;
   sources: string[];
   tags: string[];
+  evidence?: any[];
+  usageCount?: number;
 }
 
 export class ResearchWorkflow {
@@ -200,8 +205,8 @@ export class ResearchWorkflow {
   }
 
   private generateSummary(results: FusedResult[], query: string): string {
-    const domains = [...new Set(results.map(r => r.metadata.domain))];
-    const contentTypes = [...new Set(results.map(r => r.metadata.contentType))];
+    const domains = Array.from(new Set(results.map(r => r.metadata.domain)));
+    const contentTypes = Array.from(new Set(results.map(r => r.metadata.contentType)));
     
     return `Research on "${query}" found ${results.length} relevant sources across ${domains.length} domains. Content types include: ${contentTypes.join(', ')}. The search covered both real-time and historical content, providing comprehensive coverage of the topic.`;
   }

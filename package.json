@@ -23,6 +23,8 @@
     "prisma:migrate": "prisma migrate deploy",
     "prisma:seed": "tsx prisma/seed.ts",
     "prisma:studio": "prisma studio -p 4444",
+    "build": "npx tsc && node fix-imports.cjs",
+    "build:watch": "npx tsc --watch",
     "typecheck": "npx tsc --noEmit"
   },
   "lint-staged": {

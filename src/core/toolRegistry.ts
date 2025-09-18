@@ -19,7 +19,7 @@ export class ToolRegistry {
 
   /** List all tools */
   list(): Tool[] {
-    return [...this.tools.values()];
+    return Array.from(this.tools.values());
   }
 
   /** Call a tool by name with validated input */

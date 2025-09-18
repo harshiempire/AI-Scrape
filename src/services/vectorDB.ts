@@ -1,6 +1,8 @@
 // src/services/vectorDB.ts
 import { ChromaClient } from 'chromadb';
 import { OpenAI } from 'openai';
+import { DefaultEmbeddingFunction } from '@chroma-core/default-embed';
+import * as dotenv from 'dotenv';
 
 export interface DocumentChunk {
   id: string;
@@ -20,13 +22,15 @@ export interface DocumentChunk {
   embeddings?: number[];
 }
 
+dotenv.config();
+
 export class VectorDatabaseService {
   private client: ChromaClient;
   private openai: OpenAI;
+  private embeddingFunction: DefaultEmbeddingFunction;
   private collectionName = 'research_documents';
 
   constructor() {
-
     const chromaUrl = process.env.CHROMA_URL || 'http://localhost:8000';
     this.client = new ChromaClient({
       path: chromaUrl
@@ -34,6 +38,9 @@ export class VectorDatabaseService {
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY
     });
+    
+    // Initialize the default embedding function
+    this.embeddingFunction = new DefaultEmbeddingFunction();
   }
 
   async initialize(): Promise<void> {
@@ -45,13 +52,32 @@ export class VectorDatabaseService {
       if (!exists) {
         await this.client.createCollection({
           name: this.collectionName,
+          embeddingFunction: this.embeddingFunction,
           metadata: {
             description: 'Research documents with embeddings for semantic search'
           }
         });
-        console.log(`Created collection: ${this.collectionName}`);
+        console.log(`Created collection: ${this.collectionName} with proper embedding function`);
       } else {
-        console.log(`Collection ${this.collectionName} already exists`);
+        // If collection exists but was created without embedding function, recreate it
+        try {
+          await this.client.getCollection({ 
+            name: this.collectionName,
+            embeddingFunction: this.embeddingFunction
+          });
+          console.log(`Collection ${this.collectionName} already exists with proper embedding function`);
+        } catch (getError) {
+          console.log(`Collection ${this.collectionName} exists but needs to be recreated with embedding function`);
+          await this.client.deleteCollection({ name: this.collectionName });
+          await this.client.createCollection({
+            name: this.collectionName,
+            embeddingFunction: this.embeddingFunction,
+            metadata: {
+              description: 'Research documents with embeddings for semantic search'
+            }
+          });
+          console.log(`Recreated collection: ${this.collectionName} with proper embedding function`);
+        }
       }
     } catch (error) {
       console.error('Failed to initialize VectorDB:', error);
@@ -76,11 +102,10 @@ export class VectorDatabaseService {
 
   async storeDocuments(chunks: DocumentChunk[]): Promise<void> {
     try {
-      const collection = await this.client.getCollection({ name: this.collectionName });
-      
-      // Generate embeddings for all chunks
-      const texts = chunks.map(chunk => chunk.content);
-      const embeddings = await this.generateEmbeddings(texts);
+      const collection = await this.client.getCollection({ 
+        name: this.collectionName,
+        embeddingFunction: this.embeddingFunction
+      });
       
       // Prepare data for ChromaDB
       const ids = chunks.map(chunk => chunk.id);
@@ -90,7 +115,6 @@ export class VectorDatabaseService {
       await collection.add({
         ids,
         documents,
-        embeddings,
         metadatas
       });
 
@@ -107,14 +131,14 @@ export class VectorDatabaseService {
     filters?: Record<string, any>
   ): Promise<DocumentChunk[]> {
     try {
-      const collection = await this.client.getCollection({ name: this.collectionName });
+      const collection = await this.client.getCollection({ 
+        name: this.collectionName,
+        embeddingFunction: this.embeddingFunction
+      });
       
-      // Generate embedding for the query
-      const queryEmbedding = await this.generateEmbeddings([query]);
-      
-      // Perform similarity search
+      // Perform similarity search (embedding function handles query embedding)
       const results = await collection.query({
-        queryEmbeddings: queryEmbedding,
+        queryTexts: [query],
         nResults: limit,
         where: filters
       });
@@ -142,7 +166,10 @@ export class VectorDatabaseService {
 
   async getCollectionStats(): Promise<{ count: number }> {
     try {
-      const collection = await this.client.getCollection({ name: this.collectionName });
+      const collection = await this.client.getCollection({ 
+        name: this.collectionName,
+        embeddingFunction: this.embeddingFunction
+      });
       const count = await collection.count();
       return { count };
     } catch (error) {

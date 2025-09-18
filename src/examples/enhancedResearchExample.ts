@@ -37,7 +37,7 @@ async function demonstrateEnhancedResearch() {
       console.log(`   Source: ${result.source}`);
       console.log(`   Quality Score: ${result.qualityScore.toFixed(2)}`);
       console.log(`   Relevance Score: ${result.relevanceScore.toFixed(2)}`);
-      console.log(`   Content Preview: ${result.content.substring(0, 100)}...\n`);
+      console.log(`   Content Preview: ${result.content.substring(0, 50)}...\n`);
     });
 
     // Display insights

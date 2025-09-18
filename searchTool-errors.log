@@ -288,3 +288,111 @@ AxiosError: Request failed with status code 403
     at async Tool.Tool.func (/Users/harshithalle/AI-Scrape/src/core/tool.ts:28:16)
     at async <anonymous> (/Users/harshithalle/AI-Scrape/src/tools/searchTool.ts:170:18)
 
+[2025-09-15T17:03:47.181Z] Error processing link https://www.filmibeat.com/telugu/movies/little-hearts.html:
+AxiosError: Request failed with status code 403
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at BrotliDecompress.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:617:11)
+    at BrotliDecompress.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async SearchTool.getStaticHtml (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:132:26)
+    at async file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:83:32
+    at async Promise.allSettled (index 4)
+    at async SearchTool.smartFetchAndParse (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:92:26)
+    at async SearchTool.search (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:62:35)
+    at async func (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:36:35)
+    at async Tool.func (file:///Users/harshithalle/AI-Scrape/dist/core/tool.js:15:24)
+    at async file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:142:20
+
+[2025-09-15T17:03:47.187Z] Error processing link https://in.bookmyshow.com/movies/hyderabad/little-hearts/ET00459285:
+AxiosError: Request failed with status code 403
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at BrotliDecompress.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:617:11)
+    at BrotliDecompress.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async SearchTool.getStaticHtml (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:132:26)
+    at async file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:83:32
+    at async Promise.allSettled (index 5)
+    at async SearchTool.smartFetchAndParse (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:92:26)
+    at async SearchTool.search (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:62:35)
+    at async func (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:36:35)
+    at async Tool.func (file:///Users/harshithalle/AI-Scrape/dist/core/tool.js:15:24)
+    at async file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:142:20
+
+[2025-09-15T17:14:04.943Z] Error processing link https://www.filmibeat.com/telugu/movies/little-hearts.html:
+AxiosError: Request failed with status code 403
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at BrotliDecompress.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:617:11)
+    at BrotliDecompress.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async SearchTool.getStaticHtml (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:132:26)
+    at async file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:83:32
+    at async Promise.allSettled (index 4)
+    at async SearchTool.smartFetchAndParse (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:92:26)
+    at async SearchTool.search (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:62:35)
+    at async func (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:36:35)
+    at async Tool.func (file:///Users/harshithalle/AI-Scrape/dist/core/tool.js:15:24)
+    at async file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:142:20
+
+[2025-09-15T17:14:04.945Z] Error processing link https://in.bookmyshow.com/movies/hyderabad/little-hearts/ET00459285:
+AxiosError: Request failed with status code 403
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at BrotliDecompress.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:617:11)
+    at BrotliDecompress.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async SearchTool.getStaticHtml (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:132:26)
+    at async file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:83:32
+    at async Promise.allSettled (index 5)
+    at async SearchTool.smartFetchAndParse (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:92:26)
+    at async SearchTool.search (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:62:35)
+    at async func (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:36:35)
+    at async Tool.func (file:///Users/harshithalle/AI-Scrape/dist/core/tool.js:15:24)
+    at async file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:142:20
+
+[2025-09-15T17:23:45.205Z] Error processing link https://www.filmibeat.com/telugu/movies/little-hearts.html:
+AxiosError: Request failed with status code 403
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at BrotliDecompress.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:617:11)
+    at BrotliDecompress.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async SearchTool.getStaticHtml (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:132:26)
+    at async file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:83:32
+    at async Promise.allSettled (index 4)
+    at async SearchTool.smartFetchAndParse (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:92:26)
+    at async SearchTool.search (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:62:35)
+    at async func (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:36:35)
+    at async Tool.func (file:///Users/harshithalle/AI-Scrape/dist/core/tool.js:11:24)
+    at async file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:142:20
+
+[2025-09-15T17:23:45.207Z] Error processing link https://in.bookmyshow.com/movies/hyderabad/little-hearts/ET00459285:
+AxiosError: Request failed with status code 403
+    at settle (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/settle.js:19:12)
+    at BrotliDecompress.handleStreamEnd (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/adapters/http.js:617:11)
+    at BrotliDecompress.emit (node:events:525:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (file:///Users/harshithalle/AI-Scrape/node_modules/axios/lib/core/Axios.js:45:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async SearchTool.getStaticHtml (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:132:26)
+    at async file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:83:32
+    at async Promise.allSettled (index 5)
+    at async SearchTool.smartFetchAndParse (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:92:26)
+    at async SearchTool.search (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:62:35)
+    at async func (file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:36:35)
+    at async Tool.func (file:///Users/harshithalle/AI-Scrape/dist/core/tool.js:11:24)
+    at async file:///Users/harshithalle/AI-Scrape/dist/tools/searchTool.js:142:20
+

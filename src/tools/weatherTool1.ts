@@ -74,7 +74,3 @@ export class WeatherTool {
 }
 
 const weatherTool = WeatherTool.createTool();
-(async () => {
-  const result = await weatherTool.run({ location: "Weather of hyderabad" });
-  console.log("Search results:", result);
-})();

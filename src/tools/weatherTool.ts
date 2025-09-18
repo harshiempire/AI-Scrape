@@ -3,8 +3,8 @@
 import axios from 'axios';
 import { z } from 'zod';
 import { Tool, ToolInput, ToolOutput } from '../core/tool';
-import path from 'path';
-import fs from 'fs';
+import * as path from 'path';
+import * as fs from 'fs';
 
 // Helper function to log errors to a file
 function logErrorToFile(message: string, error: any) {

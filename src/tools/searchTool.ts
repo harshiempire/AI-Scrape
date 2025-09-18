@@ -3,9 +3,9 @@ import { z } from "zod";
 import { Tool } from "../core/tool.js";
 import axios from "axios";
 import { getJson } from "serpapi";
-import fs from "fs";
+import * as fs from "fs";
 import { fetchRenderedHtml } from "./renderHtml.js";
-import path from "path";
+import * as path from "path";
 import { parseHtmlToMarkdown, ParsedPage } from "./htmlParse.js"; // Assuming ParsedPage is exported
 
 // Helper function to log errors to a file
@@ -166,9 +166,5 @@ export class SearchTool {
 }
 
 const searchTool = SearchTool.createTool();
-(async () => {
-  const result = await searchTool.run({ query: "Mouli actor Little Hearts 2025" });
-  console.log("Search results:", result);
-})();
 
 export default searchTool;
