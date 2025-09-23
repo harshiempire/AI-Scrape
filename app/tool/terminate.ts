@@ -18,7 +18,8 @@ export class Terminate extends BaseTool {
     required: ["status"],
   };
 
-  async execute(status: string): string {
+  async execute(kwargs: Record<string, any>): Promise<string> {
+    const status = kwargs.status;
     return `The interaction has been completed with status: ${status}`;
   }
 }
