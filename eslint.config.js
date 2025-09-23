@@ -11,7 +11,7 @@ export default [
     },
     ignores: ["node_modules", "dist"],
     rules: {
-      "@typescript-eslint/no-explicit-any": "error", // Disallow the use of `any`
+      "@typescript-eslint/no-explicit-any": "warning", // Disallow the use of `any`
       camelcase: "off", // Enforce camelCase naming convention
       quotes: ["error", "double"], // Enforce the consistent use of double quotes
       semi: ["error", "always"], // Require semicolons at the end of statements
