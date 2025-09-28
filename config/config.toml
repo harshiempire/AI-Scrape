@@ -1,0 +1,26 @@
+[llm]
+model = "gpt-4"
+base_url = "https://api.openai.com/v1"
+api_key = "your-api-key-here"
+max_tokens = 4096
+temperature = 0.7
+api_type = "openai"
+api_version = ""
+
+[browser]
+headless = true
+
+[search]
+timeout = 30000
+
+[sandbox]
+enabled = false
+
+[daytona]
+enabled = false
+
+[mcp]
+enabled = false
+
+[runflow]
+enabled = false

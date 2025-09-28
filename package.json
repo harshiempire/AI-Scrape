@@ -1,7 +1,7 @@
 {
-  "name": "authserver",
+  "name": "deep-research-agent",
   "version": "1.0.0",
-  "description": "",
+  "description": "Industry-standard AI-powered research agent with comprehensive analysis, citation management, and quality validation",
   "main": "index.ts",
   "type": "module",
   "scripts": {
@@ -9,13 +9,21 @@
     "start": "npx tsx src/index.ts",
     "server": "npx tsx server.ts",
     "server:dev": "npx nodemon server.ts",
+    "research:example": "npx tsx examples/deep_research_example.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run tests/",
+    "test:integration": "vitest run tests/ --reporter=verbose",
+    "test:performance": "vitest run tests/ --reporter=verbose --config.testTimeout=60000",
     "format": "prettier --write .",
     "lint-staged": "lint-staged",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "prisma:seed": "tsx prisma/seed.ts",
     "prisma:studio": "prisma studio -p 4444",
-    "typecheck": "npx tsc --noEmit"
+    "typecheck": "npx tsc --noEmit",
+    "build": "tsc",
+    "clean": "rm -rf dist"
   },
   "lint-staged": {
     "**/*.{ts}": [
