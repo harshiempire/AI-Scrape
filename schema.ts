@@ -198,3 +198,23 @@ export class Memory {
     return this.messages.map((message) => message.to_dict());
   }
 }
+
+export enum ToolChoice {
+  AUTO = "auto",
+  NONE = "none",
+  REQUIRED = "required",
+}
+
+export const TOOL_CHOICE_VALUES = Object.values(ToolChoice);
+export type TOOL_CHOICE_TYPE = (typeof TOOL_CHOICE_VALUES)[number];
+
+export interface LLMSettings{
+  model: string; // Model name
+  base_url: string; // API base URL
+  api_key: string; // API key
+  max_tokens: number; // Maximum number of tokens per request (default 4096)
+  max_input_tokens?: number | null; // Maximum input tokens to use across all requests (None for unlimited)
+  temperature: number; // Sampling temperature (default 1.0)
+  api_type: string; // Azure, Openai, or Ollama
+  api_version: string; // Azure Openai version if AzureOpenai
+}

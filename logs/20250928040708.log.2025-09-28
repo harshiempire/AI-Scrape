@@ -1,0 +1,4 @@
+{"level":"debug","message":"This debug message should appear in file only","timestamp":"2025-09-28 09:37:08"}
+{"level":"info","message":"This info message should appear in both console and file","timestamp":"2025-09-28 09:37:08"}
+{"level":"warn","message":"This warning should appear in both console and file","timestamp":"2025-09-28 09:37:08"}
+{"level":"error","message":"This error should appear in both console and file","timestamp":"2025-09-28 09:37:08"}

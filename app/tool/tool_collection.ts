@@ -1,5 +1,6 @@
 import { ToolResultType } from "../../types";
 import { BaseTool, ToolFailure } from "./base";
+import { log } from "../logger";
 
 export class ToolCollection {
   tools: BaseTool[];
@@ -73,7 +74,7 @@ export class ToolCollection {
 
   add_tool(tool: BaseTool): ToolCollection {
     if (tool.name in this.tool_map) {
-      console.warn(`Tool ${tool.name} already exists in collection, skipping`);
+      log.warn(`Tool ${tool.name} already exists in collection, skipping`);
       return this;
     }
     this.tool_map[tool.name] = tool;

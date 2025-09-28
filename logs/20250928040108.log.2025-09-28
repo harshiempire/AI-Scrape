@@ -1,0 +1,14 @@
+{"level":"info","message":"Starting application","timestamp":"2025-09-28 09:31:08"}
+{"level":"debug","message":"Debug message","timestamp":"2025-09-28 09:31:08"}
+{"level":"warn","message":"Warning message","timestamp":"2025-09-28 09:31:08"}
+{"level":"error","message":"Error message","timestamp":"2025-09-28 09:31:08"}
+{"level":"error","message":"[CRITICAL] Critical message","timestamp":"2025-09-28 09:31:08"}
+{"error":"Test error","level":"error","message":"An error occurred","stack":"Error: Test error\n    at testLogger (/Users/harshithalle/AI-Scrape/app/logger.ts:124:11)\n    at <anonymous> (/Users/harshithalle/AI-Scrape/test-logger.ts:7:1)\n    at ModuleJob.run (node:internal/modules/esm/module_job:271:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:547:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:116:5)","timestamp":"2025-09-28 09:31:08"}
+{"level":"info","message":"Application started successfully","timestamp":"2025-09-28 09:31:08"}
+{"level":"debug","message":"Debug information: processing user request","timestamp":"2025-09-28 09:31:08"}
+{"level":"warn","message":"Warning: API rate limit approaching","timestamp":"2025-09-28 09:31:08"}
+{"level":"error","message":"Error: Failed to connect to database","timestamp":"2025-09-28 09:31:08"}
+{"level":"error","message":"[CRITICAL] Critical: System memory usage at 95%","timestamp":"2025-09-28 09:31:08"}
+{"level":"info","message":"User login","timestamp":"2025-09-28 09:31:08","userId":"12345"}
+{"error":"Connection timeout","lastAttempt":"2025-09-28T04:01:08.164Z","level":"error","message":"Database connection failed","retryCount":3,"timestamp":"2025-09-28 09:31:08"}
+{"context":"user-authentication","error":"Simulated application error","level":"error","message":"An unexpected error occurred","stack":"Error: Simulated application error\n    at <anonymous> (/Users/harshithalle/AI-Scrape/test-logger.ts:28:9)\n    at ModuleJob.run (node:internal/modules/esm/module_job:271:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:547:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:116:5)","timestamp":"2025-09-28 09:31:08","userId":"12345"}

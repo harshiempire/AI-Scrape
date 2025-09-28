@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/Users/harshithalle/AI-Scrape/logs/.71dc4864fe988e39d765cd7806215e5378392253-audit.json",
+    "files": [
+        {
+            "date": 1759032355129,
+            "name": "/Users/harshithalle/AI-Scrape/logs/20250928040555.log.2025-09-28",
+            "hash": "5a546aa929c3ba9d73f9dae326ecc5eb9b36e92651e42c21df21ca26f96087f9"
+        }
+    ],
+    "hashType": "sha256"
+}

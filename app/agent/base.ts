@@ -6,6 +6,7 @@ import {
   BaseAgentInput,
   BaseAgentPropsSchema,
 } from "../../types";
+import { log } from "../logger";
 
 export abstract class BaseAgent {
   name: string;
@@ -116,7 +117,7 @@ export abstract class BaseAgent {
           this.state !== AgentState.COMPLETED
         ) {
           this.current_step += 1;
-          console.log(`Executing step ${this.current_step}/${this.max_steps}`);
+          log.info(`Executing step ${this.current_step}/${this.max_steps}`);
 
           const step_result = await this.step();
 
@@ -152,7 +153,7 @@ export abstract class BaseAgent {
       "Observed duplicate responses. Consider new strategies and avoid repeating ineffective paths already attempted";
 
     this.next_step_prompt = `${stuck_message}\n${this.next_step_prompt}`;
-    console.warn(
+    log.warn(
       `Agent detected stuck state. Added prompt: ${this.next_step_prompt}`
     );
   }
@@ -167,7 +168,7 @@ export abstract class BaseAgent {
     }
 
     let duplicate_count = 0;
-    for (const msg of this.memory.messages.reverse()) {
+    for (const msg of this.memory.messages.slice(0, -1).reverse()) {
       if (msg.role === Role.ASSISTANT && msg.content === last_message.content) {
         duplicate_count++;
       }

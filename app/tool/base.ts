@@ -1,4 +1,7 @@
+import { ZodSchema, ZodTypeAny } from "zod";
 import { ToolResultSchema, ToolResultType } from "../../types";
+import zodToJsonSchema from "zod-to-json-schema";
+import { log } from "../logger";
 
 export class ToolResult implements ToolResultType {
   output?: any;
@@ -9,7 +12,7 @@ export class ToolResult implements ToolResultType {
   constructor(props: ToolResultType) {
     const validated = ToolResultSchema.parse(props);
     Object.assign(this, validated);
-    console.log("this", this);
+    log.debug("ToolResult created", { result: this });
   }
 
   to_bool() {
@@ -71,16 +74,21 @@ export class ToolResult implements ToolResultType {
 export abstract class BaseTool {
   name: string;
   description: string;
+  schema?: ZodTypeAny;
   parameters?: Record<string, any>; // JSON schema
 
   constructor(props: {
     name: string;
     description: string;
-    parameters?: Record<string, any>;
+    schema?: ZodTypeAny;
   }) {
     this.name = props.name;
     this.description = props.description;
-    this.parameters = props.parameters;
+    this.schema = props.schema;
+
+    this.parameters = this.schema
+      ? zodToJsonSchema(this.schema, this.name)
+      : undefined;
   }
 
   abstract execute(kwargs: Record<string, any>): any;
@@ -102,14 +110,14 @@ export abstract class BaseTool {
         output: data,
       });
     }
-    console.log(`Created success response for ${this.constructor.name}`);
+    log.debug(`Created success response for ${this.constructor.name}`);
     return new ToolResult({
       output: JSON.stringify(data, null, 2),
     });
   }
 
   fail_response(msg: string): ToolResultType {
-    console.log(`Tool ${this.constructor.name} returned failed result: ${msg}`);
+    log.warn(`Tool ${this.constructor.name} returned failed result: ${msg}`);
     return new ToolResult({
       error: msg,
     });
