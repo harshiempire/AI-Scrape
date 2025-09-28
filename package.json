@@ -15,7 +15,8 @@
     "prisma:migrate": "prisma migrate deploy",
     "prisma:seed": "tsx prisma/seed.ts",
     "prisma:studio": "prisma studio -p 4444",
-    "typecheck": "npx tsc --noEmit"
+    "typecheck": "npx tsc --noEmit",
+    "research:demo": "npx tsx example/research_agent_demo.ts"
   },
   "lint-staged": {
     "**/*.{ts}": [
