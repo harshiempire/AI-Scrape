@@ -244,8 +244,8 @@ export class ToolCallAgent extends ReActAgent {
     }
   }
   private static _should_finish_execution(
-    name?: string,
-    result?: ToolResultType
+    _name?: string,
+    _result?: ToolResultType
   ): boolean {
     return true;
   }

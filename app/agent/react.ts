@@ -1,5 +1,6 @@
 import { BaseAgent } from "./base";
-import { LLM, AgentState } from "../../types";
+import { AgentState } from "../../types";
+import { LLM } from "../llm";
 import { Memory } from "../../schema";
 
 export abstract class ReActAgent extends BaseAgent {
@@ -28,7 +29,7 @@ export abstract class ReActAgent extends BaseAgent {
       description: props.description,
       system_prompt: props.system_prompt,
       next_step_prompt: props.next_step_prompt,
-      llm: props.llm || new LLM(props.name.toLowerCase()),
+      llm: props.llm || LLM.getInstance(props.name.toLowerCase()),
       memory: props.memory || new Memory(),
       state: props.state || AgentState.IDLE,
       max_steps: props.max_steps || 10,
@@ -39,7 +40,7 @@ export abstract class ReActAgent extends BaseAgent {
     this.description = props.description;
     this.system_prompt = props.system_prompt;
     this.next_step_prompt = props.next_step_prompt;
-    this.llm = props.llm || new LLM(props.name.toLowerCase());
+    this.llm = props.llm || LLM.getInstance(props.name.toLowerCase());
     this.memory = props.memory || new Memory();
     this.state = props.state || AgentState.IDLE;
     this.max_steps = props.max_steps || 10;

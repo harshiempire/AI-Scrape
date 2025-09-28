@@ -33,7 +33,7 @@ class Config {
 
   private static _get_config_path() {
     const root = PROJECT_ROOT;
-    const config_path = path.join(root, "config", "config.json");
+    const config_path = path.join(root, "config", "config.toml");
     if (fs.existsSync(config_path)) {
       return config_path;
     }
@@ -63,9 +63,10 @@ class Config {
 
     // Dictionary comprehension equivalent
     const llm_overrides = Object.fromEntries(
-      Object.entries((raw_config.llm as toml.JsonMap) || {}).filter(
-        ([k, v]) => typeof v === "object" && v !== null
-      )
+      Object.entries((raw_config.llm as toml.JsonMap) || {}).filter((entry) => {
+        const value = entry[1];
+        return typeof value === "object" && value !== null;
+      })
     ) as toml.JsonMap;
 
     const default_settings = {

@@ -24,7 +24,7 @@ export enum LogLevel {
 }
 
 // Global print level
-let _printLevel: LogLevel = LogLevel.INFO;
+let _printLevel: LogLevel = LogLevel.INFO; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 /**
  * Define log level and create logger instance

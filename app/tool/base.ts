@@ -1,4 +1,4 @@
-import { ZodSchema, ZodTypeAny } from "zod";
+import { ZodTypeAny } from "zod";
 import { ToolResultSchema, ToolResultType } from "../../types";
 import zodToJsonSchema from "zod-to-json-schema";
 import { log } from "../logger";
