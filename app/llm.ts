@@ -70,10 +70,10 @@ export class TokenCounter {
   HIGH_DETAIL_TARGET_SHORT_SIDE = 768;
   TILE_SIZE = 512;
 
-  constructor(modelName?: string) {
+  constructor(modelName?: string, tokenizer?: Tiktoken) {
     // Default to cl100k_base (GPT-4) if no model specified
     const encoding = this.getEncodingForModel(modelName || "gpt-4");
-    this.tokenizer = getEncoding(encoding);
+    this.tokenizer = tokenizer || getEncoding(encoding);
   }
 
   /**
@@ -487,8 +487,7 @@ export class LLM {
   private static instances: Map<string, LLM> = new Map();
 
   private client: any;
-  private token_counter!: TokenCounter;
-  private tokenizer: any;
+  private tokenizer!: Tiktoken;
 
   // Attributes
   private model!: string;
@@ -502,7 +501,7 @@ export class LLM {
 
   public total_input_tokens: number = 0;
   public total_completion_tokens: number = 0;
-
+  private token_counter!: TokenCounter;
   /**
    * Singleton pattern equivalent to Python's __new__
    */
@@ -566,8 +565,7 @@ export class LLM {
           baseURL: this.base_url,
         });
       }
-
-      this.token_counter = new TokenCounter(this.model);
+      this.token_counter = new TokenCounter(this.model, this.tokenizer);
     }
   }
 
@@ -716,8 +714,7 @@ export class LLM {
         }
 
         // Calculate input token count
-        const input_tokens =
-          this.token_counter.count_message_tokens(all_messages);
+        const input_tokens = this.count_message_tokens(all_messages);
 
         // Check if token limits are exceeded
         if (!this.check_token_limit(input_tokens)) {
@@ -784,8 +781,7 @@ export class LLM {
         }
 
         // Estimate completion tokens for streaming response
-        const completion_tokens =
-          this.token_counter.count_text(completion_text);
+        const completion_tokens = this.count_tokens(completion_text);
         log.info(
           `Estimated completion tokens for streaming response: ${completion_tokens}`
         );
@@ -826,9 +822,15 @@ export class LLM {
     return "Token limit exceeded";
   }
 
-  /**
-   * Update token counts
-   */
+  count_tokens(text: string): number {
+    if (!text) return 0;
+    return this.tokenizer.encode(text).length;
+  }
+
+  count_message_tokens(messages: any[]): number {
+    return this.token_counter.count_message_tokens(messages);
+  }
+
   private update_token_count(
     input_tokens: number,
     completion_tokens: number = 0
@@ -843,6 +845,24 @@ export class LLM {
         }`
     );
   }
+
+  // /**
+  //  * Update token counts
+  //  */
+  // private update_token_count(
+  //   input_tokens: number,
+  //   completion_tokens: number = 0
+  // ): void {
+  //   this.total_input_tokens += input_tokens;
+  //   this.total_completion_tokens += completion_tokens;
+  //   log.info(
+  //     `Token usage: Input=${input_tokens}, Completion=${completion_tokens}, ` +
+  //       `Cumulative Input=${this.total_input_tokens}, Cumulative Completion=${this.total_completion_tokens}, ` +
+  //       `Total=${input_tokens + completion_tokens}, Cumulative Total=${
+  //         this.total_input_tokens + this.total_completion_tokens
+  //       }`
+  //   );
+  // }
 
   /**
    * Ask LLM using functions/tools and return the response.
@@ -883,14 +903,13 @@ export class LLM {
         }
 
         // Calculate input token count
-        let input_tokens =
-          this.token_counter.count_message_tokens(all_messages);
+        let input_tokens = this.count_message_tokens(all_messages);
 
         // If there are tools, calculate token count for tool descriptions
         let tools_tokens = 0;
         if (tools) {
           for (const tool of tools) {
-            tools_tokens += this.token_counter.count_text(JSON.stringify(tool));
+            tools_tokens += this.count_tokens(JSON.stringify(tool));
           }
         }
 
@@ -964,6 +983,180 @@ export class LLM {
 
         log.error(`Error in ask_tool: ${error}`);
         throw new LLMError(`Failed to get tool response from LLM: ${error}`);
+      }
+    });
+  }
+
+  /**
+   * Send a prompt with images to the LLM and get the response.
+   */
+  async ask_with_images(
+    messages: (Message | MessageDict)[],
+    images: (string | object)[],
+    system_msgs?: (Message | MessageDict)[],
+    stream: boolean = false,
+    temperature?: number
+  ): Promise<string> {
+    return this.withRetry(async () => {
+      try {
+        // For ask_with_images, we always set supports_images to True because
+        // this method should only be called with models that support images
+        if (!MULTIMODAL_MODELS.includes(this.model)) {
+          throw new ValueError(
+            `Model ${this.model} does not support images. Use a model from ${MULTIMODAL_MODELS}`
+          );
+        }
+
+        // Format messages with image support
+        const formatted_messages = LLM.format_messages(messages, true);
+
+        // Ensure the last message is from the user to attach images
+        if (
+          !formatted_messages ||
+          formatted_messages[formatted_messages.length - 1].role !== "user"
+        ) {
+          throw new ValueError(
+            "The last message must be from the user to attach images"
+          );
+        }
+
+        // Process the last user message to include images
+        const last_message = formatted_messages[formatted_messages.length - 1];
+
+        // Convert content to multimodal format if needed
+        let content = last_message.content;
+        let multimodal_content: any[] = [];
+
+        if (typeof content === "string") {
+          multimodal_content = [{ type: "text", text: content }];
+        } else if (Array.isArray(content)) {
+          multimodal_content = content;
+        } else {
+          multimodal_content = [];
+        }
+
+        // Add images to content
+        for (const image of images) {
+          if (typeof image === "string") {
+            multimodal_content.push({
+              type: "image_url",
+              image_url: { url: image },
+            });
+          } else if (typeof image === "object" && image !== null) {
+            const imageObj = image as any;
+            if ("url" in imageObj) {
+              multimodal_content.push({
+                type: "image_url",
+                image_url: imageObj,
+              });
+            } else if ("image_url" in imageObj) {
+              multimodal_content.push(imageObj);
+            } else {
+              throw new ValueError(`Unsupported image format: ${image}`);
+            }
+          } else {
+            throw new ValueError(`Unsupported image format: ${image}`);
+          }
+        }
+
+        // Update the message with multimodal content
+        (last_message as any).content = multimodal_content;
+
+        // Add system messages if provided
+        let all_messages: MessageDict[];
+        if (system_msgs) {
+          const formatted_system_msgs = LLM.format_messages(system_msgs, true);
+          all_messages = [...formatted_system_msgs, ...formatted_messages];
+        } else {
+          all_messages = formatted_messages;
+        }
+
+        // Calculate tokens and check limits
+        const input_tokens = this.count_message_tokens(all_messages);
+        if (!this.check_token_limit(input_tokens)) {
+          throw new TokenLimitExceeded(
+            this.get_limit_error_message(input_tokens)
+          );
+        }
+
+        // Set up API parameters
+        const params: any = {
+          model: this.model,
+          messages: all_messages,
+          stream: stream,
+        };
+
+        // Add model-specific parameters
+        if (REASONING_MODELS.includes(this.model)) {
+          params.max_completion_tokens = this.max_tokens;
+        } else {
+          params.max_tokens = this.max_tokens;
+          params.temperature =
+            temperature !== undefined ? temperature : this.temperature;
+        }
+
+        // Handle non-streaming request
+        if (!stream) {
+          const response = await this.client.chat.completions.create(params);
+
+          if (!response.choices || !response.choices[0].message.content) {
+            throw new ValueError("Empty or invalid response from LLM");
+          }
+
+          this.update_token_count(response.usage.prompt_tokens);
+          return response.choices[0].message.content;
+        }
+
+        // Handle streaming request
+        this.update_token_count(input_tokens);
+        const response = await this.client.chat.completions.create(params);
+
+        const collected_messages: string[] = [];
+        for await (const chunk of response) {
+          const chunk_message = chunk.choices[0].delta.content || "";
+          collected_messages.push(chunk_message);
+          process.stdout.write(chunk_message);
+        }
+
+        process.stdout.write("\n"); // Newline after streaming
+        const full_response = collected_messages.join("").trim();
+
+        if (!full_response) {
+          throw new ValueError("Empty response from streaming LLM");
+        }
+
+        return full_response;
+      } catch (error) {
+        if (error instanceof TokenLimitExceeded) {
+          throw error;
+        }
+        if (error instanceof ValueError) {
+          log.error(`Validation error in ask_with_images: ${error.message}`);
+          throw error;
+        }
+        if (error && typeof error === "object" && "name" in error) {
+          const errorName = (error as any).name;
+          if (
+            errorName === "OpenAIError" ||
+            errorName === "AuthenticationError" ||
+            errorName === "RateLimitError" ||
+            errorName === "APIError"
+          ) {
+            log.error(`OpenAI API error: ${(error as any).message}`);
+            if (errorName === "AuthenticationError") {
+              log.error("Authentication failed. Check API key.");
+            } else if (errorName === "RateLimitError") {
+              log.error(
+                "Rate limit exceeded. Consider increasing retry attempts."
+              );
+            } else if (errorName === "APIError") {
+              log.error(`API error: ${(error as any).message}`);
+            }
+            throw error;
+          }
+        }
+        log.error(`Unexpected error in ask_with_images: ${error}`);
+        throw new LLMError(`Failed to get response from LLM: ${error}`);
       }
     });
   }

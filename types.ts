@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { Memory } from "./schema";
+import { LLM } from "./app/llm";
 export enum AgentState {
   IDLE = "idle",
   RUNNING = "running",
@@ -28,11 +29,6 @@ export interface MessageDict {
   base64_image?: string;
 }
 
-// Define LLM and Memory classes/interfaces first
-export class LLM {
-  constructor(public config_name: string) {}
-}
-
 // Original interface (keep for backward compatibility)
 export interface BaseAgentProps {
   name: string;
@@ -47,9 +43,11 @@ export interface BaseAgentProps {
 }
 
 // Zod schemas for validation
-export const LLMSchema = z.object({
-  config_name: z.string(),
-});
+export const LLMSchema = z
+  .object({
+    config_name: z.string(),
+  })
+  .transform((data) => LLM.getInstance(data.config_name));
 
 export const MemorySchema = z
   .object({
@@ -78,8 +76,8 @@ export const BaseAgentPropsSchema = BaseAgentInputSchema.transform((data) => {
     description: data.description,
     system_prompt: data.system_prompt,
     next_step_prompt: data.next_step_prompt,
-    llm: data.llm || new LLM(data.name.toLowerCase()),
-    memory: data.memory || new Memory(), // Fix: Create Memory instance
+    llm: data.llm || LLM.getInstance(data.name.toLowerCase()),
+    memory: data.memory || new Memory(),
     state: data.state || AgentState.IDLE,
     max_steps: data.max_steps || 10,
     duplicate_threshold: data.duplicate_threshold || 0.5,

@@ -76,6 +76,7 @@ export abstract class BaseTool {
   description: string;
   schema?: ZodTypeAny;
   parameters?: Record<string, any>; // JSON schema
+  cleanup?(): Promise<void> | void;
 
   constructor(props: {
     name: string;

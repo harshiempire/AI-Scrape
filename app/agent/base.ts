@@ -1,12 +1,12 @@
 import { Memory, Role, Message } from "../../schema";
 import {
-  LLM,
   AgentState,
   BaseAgentProps,
   BaseAgentInput,
   BaseAgentPropsSchema,
 } from "../../types";
 import { log } from "../logger";
+import { LLM } from "../llm";
 
 export abstract class BaseAgent {
   name: string;

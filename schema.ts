@@ -1,4 +1,4 @@
-import { MessageDict } from "./types";
+import { MessageDict, ToolCallDict } from "./types";
 
 export enum Role {
   SYSTEM = "system",
@@ -170,6 +170,30 @@ export class Message {
       base64_image
     );
   }
+
+  static from_tool_calls(
+    tool_calls: ToolCallDict[],
+    content: string | string[] = "",
+    base64_image?: string
+  ): Message {
+    // Convert ToolCall objects to the format expected by the constructor
+    const formatted_calls: ToolCall[] = tool_calls.map(
+      (call) =>
+        new ToolCall(
+          call.id,
+          new FunctionCall(call.function.name, call.function.arguments)
+        )
+    );
+
+    return new Message(
+      Role.ASSISTANT,
+      Array.isArray(content) ? content.join("") : content,
+      formatted_calls,
+      undefined,
+      undefined,
+      base64_image
+    );
+  }
 }
 
 export class Memory {
@@ -208,7 +232,7 @@ export enum ToolChoice {
 export const TOOL_CHOICE_VALUES = Object.values(ToolChoice);
 export type TOOL_CHOICE_TYPE = (typeof TOOL_CHOICE_VALUES)[number];
 
-export interface LLMSettings{
+export interface LLMSettings {
   model: string; // Model name
   base_url: string; // API base URL
   api_key: string; // API key
