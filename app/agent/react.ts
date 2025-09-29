@@ -1,6 +1,7 @@
 import { BaseAgent } from "./base";
-import { LLM, AgentState } from "../../types";
+import { AgentState } from "../../types";
 import { Memory } from "../../schema";
+import { LLM } from "../llm";
 
 export abstract class ReActAgent extends BaseAgent {
   name: string;

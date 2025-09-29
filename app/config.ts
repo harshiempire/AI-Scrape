@@ -1,9 +1,12 @@
 import path from "path";
 import fs from "fs";
 import * as toml from "@iarna/toml";
+import { fileURLToPath } from 'url';
 import { LLMSettings } from "../schema";
 
 function get_project_root() {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
   return path.resolve(__dirname, "..");
 }
 
@@ -33,9 +36,14 @@ class Config {
 
   private static _get_config_path() {
     const root = PROJECT_ROOT;
-    const config_path = path.join(root, "config", "config.json");
-    if (fs.existsSync(config_path)) {
-      return config_path;
+    const toml_path = path.join(root, "config", "config.toml");
+    const json_path = path.join(root, "config", "config.json");
+    
+    if (fs.existsSync(toml_path)) {
+      return toml_path;
+    }
+    if (fs.existsSync(json_path)) {
+      return json_path;
     }
     return null;
   }
