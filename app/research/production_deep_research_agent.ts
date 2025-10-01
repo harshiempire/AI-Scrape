@@ -617,7 +617,8 @@ Your goal is to produce research that meets academic and professional standards 
       // Filter scraped content by quality
       const quality_content = scraped_results.filter(
         (content) =>
-          content.quality_score >= 0.5 && content.metadata.word_count >= 200
+          content.quality_metrics?.credibility_score >= 0.5 && 
+          content.metadata?.word_count >= 200
       );
 
       // Adapt scraped content to expected schema with all required properties
@@ -625,10 +626,11 @@ Your goal is to produce research that meets academic and professional standards 
         ...content,
         clean_text: content.content,
         markdown: content.content,
+        quality_score: content.quality_metrics?.credibility_score || 0.5,
         quality_metrics: {
-          credibility_score: content.quality_score,
-          authority_indicators: [],
-          readability_score: content.quality_score,
+          credibility_score: content.quality_metrics?.credibility_score || 0.5,
+          authority_indicators: content.quality_metrics?.authority_indicators || [],
+          readability_score: content.quality_metrics?.readability_score || 0.5,
         },
         scrape_duration: 0,
         extracted_data: {

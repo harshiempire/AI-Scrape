@@ -547,10 +547,7 @@ Return your analysis as a structured list of claims with:
           "length:",
           messages?.length
         );
-        const response = await this.llm.ask(messages, {
-          temperature: 0.2,
-          max_tokens: 2000,
-        });
+        const response = await this.llm.ask(messages, undefined, true, 0.2);
 
         if (response) {
           const insight = await this.parse_validation_response(
