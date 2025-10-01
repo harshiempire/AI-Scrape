@@ -352,9 +352,20 @@ class GeminiAdapter {
         }
       }
 
+      // Map OpenAI roles to Gemini roles
+      let geminiRole = msg.role;
+      if (msg.role === "assistant") {
+        geminiRole = "model";
+      } else if (msg.role === "system") {
+        // Gemini doesn't have system role, convert to user message
+        geminiRole = "user";
+      } else if (msg.role === "user") {
+        geminiRole = "user";
+      }
+
       return {
         parts,
-        role: msg.role === "assistant" ? "model" : msg.role,
+        role: geminiRole,
       };
     });
   }
@@ -434,6 +445,8 @@ class GeminiAdapter {
           tool_choice,
           temperature,
           stream,
+          max_tokens,
+          max_completion_tokens,
           ...otherParams
         } = params;
 
@@ -442,8 +455,27 @@ class GeminiAdapter {
 
         const generationConfig: any = {
           temperature: temperature || 0.7,
-          ...otherParams,
         };
+
+        // Convert OpenAI max_tokens to Gemini maxOutputTokens
+        if (max_tokens) {
+          generationConfig.maxOutputTokens = max_tokens;
+        } else if (max_completion_tokens) {
+          generationConfig.maxOutputTokens = max_completion_tokens;
+        }
+
+        // Add other valid Gemini parameters (exclude OpenAI-specific ones)
+        const validGeminiParams = [
+          "candidateCount",
+          "stopSequences",
+          "topK",
+          "topP",
+        ];
+        Object.keys(otherParams).forEach((key) => {
+          if (validGeminiParams.includes(key)) {
+            generationConfig[key] = otherParams[key];
+          }
+        });
 
         if (stream) {
           // Handle streaming
@@ -516,7 +548,7 @@ export class LLM {
     return this.instances.get(config_name)!;
   }
 
-  private constructor(config_name: string, llm_config_var?: LLMSettings) {
+  constructor(config_name: string, llm_config_var?: LLMSettings) {
     // Only initialize if not already initialized (equivalent to Python's hasattr check)
     if (!this.client) {
       // Use provided config or default config
@@ -985,6 +1017,25 @@ export class LLM {
         throw new LLMError(`Failed to get tool response from LLM: ${error}`);
       }
     });
+  }
+
+  /**
+   * Generate response using the LLM (simpler interface)
+   */
+  async generate(
+    messages: (Message | MessageDict)[],
+    options?: any
+  ): Promise<string> {
+    const stream = options?.stream ?? false;
+    const temperature = options?.temperature;
+    return this.ask(messages, undefined, stream, temperature);
+  }
+
+  /**
+   * Get the config name for this LLM instance
+   */
+  get config_name(): string {
+    return this.model;
   }
 
   /**

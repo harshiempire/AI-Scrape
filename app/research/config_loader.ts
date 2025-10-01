@@ -8,7 +8,7 @@ export interface EnvironmentConfig {
   bing_search_key?: string;
   google_search_key?: string;
   google_search_engine_id?: string;
-  
+
   // Performance settings
   max_concurrent_searches?: number;
   max_concurrent_scrapes?: number;
@@ -17,7 +17,7 @@ export interface EnvironmentConfig {
   requests_per_second?: number;
   burst_limit?: number;
   max_memory_mb?: number;
-  
+
   // Research settings
   min_source_authority?: number;
   confidence_threshold?: number;
@@ -25,12 +25,12 @@ export interface EnvironmentConfig {
   use_browser_for_js?: boolean;
   respect_robots_txt?: boolean;
   scraping_delay_ms?: number;
-  
+
   // Output settings
   default_citation_style?: "apa" | "mla" | "chicago" | "ieee";
   include_performance_metrics?: boolean;
   save_intermediate_results?: boolean;
-  
+
   // Logging
   log_level?: string;
   log_to_file?: boolean;
@@ -49,27 +49,49 @@ export class ResearchConfigLoader {
     config.google_search_engine_id = process.env.GOOGLE_SEARCH_ENGINE_ID;
 
     // Performance settings with defaults
-    config.max_concurrent_searches = parseInt(process.env.MAX_CONCURRENT_SEARCHES || "5");
-    config.max_concurrent_scrapes = parseInt(process.env.MAX_CONCURRENT_SCRAPES || "3");
+    config.max_concurrent_searches = parseInt(
+      process.env.MAX_CONCURRENT_SEARCHES || "5"
+    );
+    config.max_concurrent_scrapes = parseInt(
+      process.env.MAX_CONCURRENT_SCRAPES || "3"
+    );
     config.enable_cache = process.env.ENABLE_CACHE !== "false";
-    config.cache_ttl_seconds = parseInt(process.env.CACHE_TTL_SECONDS || "3600");
-    config.requests_per_second = parseInt(process.env.REQUESTS_PER_SECOND || "10");
+    config.cache_ttl_seconds = parseInt(
+      process.env.CACHE_TTL_SECONDS || "3600"
+    );
+    config.requests_per_second = parseInt(
+      process.env.REQUESTS_PER_SECOND || "10"
+    );
     config.burst_limit = parseInt(process.env.BURST_LIMIT || "20");
     config.max_memory_mb = parseInt(process.env.MAX_MEMORY_MB || "512");
 
     // Research settings
-    config.min_source_authority = parseInt(process.env.MIN_SOURCE_AUTHORITY || "6");
-    config.confidence_threshold = parseFloat(process.env.CONFIDENCE_THRESHOLD || "0.75");
-    config.min_cross_validation = parseInt(process.env.MIN_CROSS_VALIDATION || "2");
+    config.min_source_authority = parseInt(
+      process.env.MIN_SOURCE_AUTHORITY || "6"
+    );
+    config.confidence_threshold = parseFloat(
+      process.env.CONFIDENCE_THRESHOLD || "0.75"
+    );
+    config.min_cross_validation = parseInt(
+      process.env.MIN_CROSS_VALIDATION || "2"
+    );
     config.use_browser_for_js = process.env.USE_BROWSER_FOR_JS === "true";
     config.respect_robots_txt = process.env.RESPECT_ROBOTS_TXT !== "false";
-    config.scraping_delay_ms = parseInt(process.env.SCRAPING_DELAY_MS || "2000");
+    config.scraping_delay_ms = parseInt(
+      process.env.SCRAPING_DELAY_MS || "2000"
+    );
 
     // Output settings
     const citation_style = process.env.DEFAULT_CITATION_STYLE as any;
-    config.default_citation_style = ["apa", "mla", "chicago", "ieee"].includes(citation_style) ? citation_style : "apa";
-    config.include_performance_metrics = process.env.INCLUDE_PERFORMANCE_METRICS !== "false";
-    config.save_intermediate_results = process.env.SAVE_INTERMEDIATE_RESULTS === "true";
+    config.default_citation_style = ["apa", "mla", "chicago", "ieee"].includes(
+      citation_style
+    )
+      ? citation_style
+      : "apa";
+    config.include_performance_metrics =
+      process.env.INCLUDE_PERFORMANCE_METRICS !== "false";
+    config.save_intermediate_results =
+      process.env.SAVE_INTERMEDIATE_RESULTS === "true";
 
     // Logging
     config.log_level = process.env.LOG_LEVEL || "info";
@@ -79,18 +101,37 @@ export class ResearchConfigLoader {
     return config;
   }
 
-  static create_production_config(env_config?: EnvironmentConfig): ProductionResearchConfig {
+  static create_production_config(
+    env_config?: EnvironmentConfig
+  ): ProductionResearchConfig {
     const env = env_config || this.load_from_env();
 
-    // Determine available search engines based on API keys
-    const search_engines = ["duckduckgo"]; // Always available
-    if (env.serpapi_key) search_engines.push("serpapi");
-    if (env.bing_search_key) search_engines.push("bing");
-    if (env.google_search_key && env.google_search_engine_id) search_engines.push("google");
+    // Determine available search engines based on API keys - use ONLY premium APIs when available
+    const search_engines: string[] = [];
+
+    // If we have SerpAPI, use ONLY SerpAPI (it's the most reliable)
+    if (env.serpapi_key) {
+      search_engines.push("serpapi");
+      log.info("🎯 Using SerpAPI exclusively (most reliable)");
+    }
+    // Otherwise, try other premium APIs
+    else if (env.bing_search_key) {
+      search_engines.push("bing");
+      log.info("🎯 Using Bing Search API exclusively");
+    } else if (env.google_search_key && env.google_search_engine_id) {
+      search_engines.push("google");
+      log.info("🎯 Using Google Custom Search exclusively");
+    }
+    // Don't use DuckDuckGo - require premium APIs
+    else {
+      throw new Error(
+        "❌ No premium search APIs configured. Please add SerpAPI, Bing, or Google API keys."
+      );
+    }
 
     const config: ProductionResearchConfig = {
       name: "ProductionResearchAgent",
-      
+
       // Search configuration
       search_engines,
       search_apis: {
@@ -99,7 +140,7 @@ export class ResearchConfigLoader {
         google_key: env.google_search_key,
         google_search_engine_id: env.google_search_engine_id,
       },
-      
+
       // Research parameters
       max_sources_per_subquery: 15,
       max_scraping_depth: 10,
@@ -109,12 +150,12 @@ export class ResearchConfigLoader {
       min_source_authority: env.min_source_authority || 6,
       require_recent_sources: true,
       max_bias_tolerance: 0.3,
-      
+
       // Scraping configuration
       use_browser_for_js_sites: env.use_browser_for_js || false,
       respect_robots_txt: env.respect_robots_txt ?? true,
       scraping_delay: env.scraping_delay_ms || 2000,
-      
+
       // Performance configuration
       performance: {
         max_concurrent_searches: env.max_concurrent_searches || 5,
@@ -138,7 +179,11 @@ export class ResearchConfigLoader {
     return config;
   }
 
-  static validate_config(config: ProductionResearchConfig): { valid: boolean; warnings: string[]; errors: string[] } {
+  static validate_config(config: ProductionResearchConfig): {
+    valid: boolean;
+    warnings: string[];
+    errors: string[];
+  } {
     const warnings: string[] = [];
     const errors: string[] = [];
 
@@ -147,27 +192,41 @@ export class ResearchConfigLoader {
       errors.push("No search engines configured");
     }
 
-    if (config.search_engines.length === 1 && config.search_engines[0] === "duckduckgo") {
-      warnings.push("Only DuckDuckGo available - consider adding premium search APIs for better results");
+    if (config.search_engines && config.search_engines.length === 0) {
+      warnings.push(
+        "Only DuckDuckGo available - consider adding premium search APIs for better results"
+      );
     }
 
     // Check thresholds
     if (config.confidence_threshold && config.confidence_threshold > 0.9) {
-      warnings.push("Very high confidence threshold may result in incomplete research");
+      warnings.push(
+        "Very high confidence threshold may result in incomplete research"
+      );
     }
 
     if (config.min_source_authority && config.min_source_authority > 8) {
-      warnings.push("Very high authority requirement may limit available sources");
+      warnings.push(
+        "Very high authority requirement may limit available sources"
+      );
     }
 
     // Check performance settings
-    if (config.performance?.max_concurrent_searches && config.performance.max_concurrent_searches > 10) {
+    if (
+      config.performance?.max_concurrent_searches &&
+      config.performance.max_concurrent_searches > 10
+    ) {
       warnings.push("High concurrent search limit may trigger rate limiting");
     }
 
     // Check memory settings
-    if (config.performance?.memory_management?.max_memory_usage && config.performance.memory_management.max_memory_usage < 256) {
-      warnings.push("Low memory limit may impact performance for large research tasks");
+    if (
+      config.performance?.memory_management?.max_memory_usage &&
+      config.performance.memory_management.max_memory_usage < 256
+    ) {
+      warnings.push(
+        "Low memory limit may impact performance for large research tasks"
+      );
     }
 
     return {
@@ -179,30 +238,42 @@ export class ResearchConfigLoader {
 
   static log_config_status(config: ProductionResearchConfig): void {
     const validation = this.validate_config(config);
-    
+
     log.info("=== RESEARCH AGENT CONFIGURATION ===");
-    log.info(`Search Engines: ${config.search_engines?.join(', ') || 'None'}`);
+    log.info(`Search Engines: ${config.search_engines?.join(", ") || "None"}`);
     log.info(`Max Sources per Query: ${config.max_sources_per_subquery}`);
-    log.info(`Confidence Threshold: ${(config.confidence_threshold || 0) * 100}%`);
+    log.info(
+      `Confidence Threshold: ${(config.confidence_threshold || 0) * 100}%`
+    );
     log.info(`Citation Style: ${config.citation_style?.toUpperCase()}`);
-    log.info(`Browser Rendering: ${config.use_browser_for_js_sites ? 'Enabled' : 'Disabled'}`);
-    log.info(`Performance Caching: ${config.performance?.cache_enabled ? 'Enabled' : 'Disabled'}`);
-    
+    log.info(
+      `Browser Rendering: ${
+        config.use_browser_for_js_sites ? "Enabled" : "Disabled"
+      }`
+    );
+    log.info(
+      `Performance Caching: ${
+        config.performance?.cache_enabled ? "Enabled" : "Disabled"
+      }`
+    );
+
     if (validation.warnings.length > 0) {
       log.warn("Configuration Warnings:");
-      validation.warnings.forEach(warning => log.warn(`- ${warning}`));
+      validation.warnings.forEach((warning) => log.warn(`- ${warning}`));
     }
-    
+
     if (validation.errors.length > 0) {
       log.error("Configuration Errors:");
-      validation.errors.forEach(error => log.error(`- ${error}`));
+      validation.errors.forEach((error) => log.error(`- ${error}`));
     }
-    
+
     log.info("=====================================");
   }
 
   // Preset configurations for different use cases
-  static get_preset_config(preset: 'fast' | 'thorough' | 'academic' | 'business'): Partial<ProductionResearchConfig> {
+  static get_preset_config(
+    preset: "fast" | "thorough" | "academic" | "business"
+  ): Partial<ProductionResearchConfig> {
     const presets = {
       fast: {
         max_sources_per_subquery: 8,
@@ -215,7 +286,7 @@ export class ResearchConfigLoader {
           cache_enabled: true,
         },
       },
-      
+
       thorough: {
         max_sources_per_subquery: 25,
         max_scraping_depth: 20,
@@ -229,7 +300,7 @@ export class ResearchConfigLoader {
           cache_ttl: 7200,
         },
       },
-      
+
       academic: {
         max_sources_per_subquery: 20,
         max_scraping_depth: 15,
@@ -242,7 +313,7 @@ export class ResearchConfigLoader {
           cache_ttl: 3600,
         },
       },
-      
+
       business: {
         max_sources_per_subquery: 15,
         max_scraping_depth: 10,
@@ -260,10 +331,12 @@ export class ResearchConfigLoader {
   }
 
   // Dynamic configuration based on query analysis
-  static analyze_query_and_configure(query: string): Partial<ProductionResearchConfig> {
+  static analyze_query_and_configure(
+    query: string
+  ): Partial<ProductionResearchConfig> {
     const lower_query = query.toLowerCase();
     const words = query.split(/\s+/).length;
-    
+
     let config: Partial<ProductionResearchConfig> = {};
 
     // Adjust based on query complexity
@@ -282,22 +355,42 @@ export class ResearchConfigLoader {
     }
 
     // Adjust based on query type
-    if (lower_query.includes('academic') || lower_query.includes('research') || lower_query.includes('study')) {
-      config = { ...config, ...this.get_preset_config('academic') };
-    } else if (lower_query.includes('business') || lower_query.includes('market') || lower_query.includes('economic')) {
-      config = { ...config, ...this.get_preset_config('business') };
-    } else if (lower_query.includes('quick') || lower_query.includes('summary')) {
-      config = { ...config, ...this.get_preset_config('fast') };
+    if (
+      lower_query.includes("academic") ||
+      lower_query.includes("research") ||
+      lower_query.includes("study")
+    ) {
+      config = { ...config, ...this.get_preset_config("academic") };
+    } else if (
+      lower_query.includes("business") ||
+      lower_query.includes("market") ||
+      lower_query.includes("economic")
+    ) {
+      config = { ...config, ...this.get_preset_config("business") };
+    } else if (
+      lower_query.includes("quick") ||
+      lower_query.includes("summary")
+    ) {
+      config = { ...config, ...this.get_preset_config("fast") };
     }
 
     // Adjust for temporal requirements
-    if (lower_query.includes('latest') || lower_query.includes('current') || lower_query.includes('2024') || lower_query.includes('recent')) {
+    if (
+      lower_query.includes("latest") ||
+      lower_query.includes("current") ||
+      lower_query.includes("2024") ||
+      lower_query.includes("recent")
+    ) {
       config.require_recent_sources = true;
     }
 
     // Adjust for depth requirements
-    if (lower_query.includes('comprehensive') || lower_query.includes('detailed') || lower_query.includes('thorough')) {
-      config = { ...config, ...this.get_preset_config('thorough') };
+    if (
+      lower_query.includes("comprehensive") ||
+      lower_query.includes("detailed") ||
+      lower_query.includes("thorough")
+    ) {
+      config = { ...config, ...this.get_preset_config("thorough") };
     }
 
     return config;

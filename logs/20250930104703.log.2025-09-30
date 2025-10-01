@@ -1,0 +1,12 @@
+{"level":"info","message":"Real information synthesizer initialized","timestamp":"2025-09-30 16:17:08"}
+{"level":"info","message":"Citation manager initialized","timestamp":"2025-09-30 16:17:08"}
+{"level":"info","message":"Report generator initialized","timestamp":"2025-09-30 16:17:08"}
+{"level":"info","message":"Research memory initialized with session ID: research_1759229228806_ibcgd7wlq","timestamp":"2025-09-30 16:17:08"}
+{"level":"info","message":"Performance optimizer initialized","timestamp":"2025-09-30 16:17:08"}
+{"0":"duckduckgo","1":"serpapi","2":"bing","3":"google","level":"info","message":"Real web search tool initialized with engines:","timestamp":"2025-09-30 16:17:08"}
+{"level":"info","message":"Real web scraper tool initialized","timestamp":"2025-09-30 16:17:08"}
+{"level":"info","message":"Production Deep Research Agent initialized: ProductionResearchAgent","timestamp":"2025-09-30 16:17:08"}
+{"level":"info","message":"Configured search engines: duckduckgo","timestamp":"2025-09-30 16:17:08"}
+{"level":"info","message":"API keys configured: 4","timestamp":"2025-09-30 16:17:08"}
+{"level":"info","message":"Performance optimizer disposed","timestamp":"2025-09-30 16:17:08"}
+{"level":"info","message":"Production agent cleanup completed","timestamp":"2025-09-30 16:17:08"}

@@ -55,9 +55,29 @@ export function defineLogLevel(
         winston.format.colorize(),
         winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
         winston.format.printf(({ timestamp, level, message, ...meta }) => {
-          const metaStr = Object.keys(meta).length
-            ? JSON.stringify(meta, null, 2)
-            : "";
+          let metaStr = "";
+          if (Object.keys(meta).length) {
+            try {
+              metaStr = JSON.stringify(meta, null, 2);
+            } catch (error) {
+              // Handle circular references
+              metaStr = JSON.stringify(
+                meta,
+                (key, value) => {
+                  if (typeof value === "object" && value !== null) {
+                    if (
+                      value.constructor?.name === "ClientRequest" ||
+                      value.constructor?.name === "IncomingMessage"
+                    ) {
+                      return "[Circular HTTP Object]";
+                    }
+                  }
+                  return value;
+                },
+                2
+              );
+            }
+          }
           return `${timestamp} [${level}]: ${message} ${metaStr}`;
         })
       ),

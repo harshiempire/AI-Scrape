@@ -35,7 +35,8 @@ export interface PerformanceMetrics {
 
 // Cache implementation
 class ResearchCache {
-  private cache: Map<string, { data: any; timestamp: number; ttl: number }> = new Map();
+  private cache: Map<string, { data: any; timestamp: number; ttl: number }> =
+    new Map();
   private hit_count: number = 0;
   private miss_count: number = 0;
 
@@ -109,7 +110,7 @@ class RateLimiter {
 
   async acquire(): Promise<void> {
     this.refill();
-    
+
     if (this.tokens >= 1) {
       this.tokens--;
       return;
@@ -117,7 +118,7 @@ class RateLimiter {
 
     // Wait for next token
     const wait_time = 1000 / this.requests_per_second;
-    await new Promise(resolve => setTimeout(resolve, wait_time));
+    await new Promise((resolve) => setTimeout(resolve, wait_time));
     return this.acquire();
   }
 
@@ -125,7 +126,7 @@ class RateLimiter {
     const now = Date.now();
     const elapsed = (now - this.last_refill) / 1000;
     const tokens_to_add = elapsed * this.requests_per_second;
-    
+
     this.tokens = Math.min(this.burst_limit, this.tokens + tokens_to_add);
     this.last_refill = now;
   }
@@ -154,14 +155,14 @@ class BatchProcessor<T, R> {
     for (const batch of batches) {
       // Wait if we've reached max concurrent batches
       while (this.active_batches >= this.max_concurrent) {
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
       }
 
       this.active_batches++;
-      
+
       // Process batch in parallel
       const batch_promise = Promise.all(
-        batch.map(async item => {
+        batch.map(async (item) => {
           try {
             return await processor(item);
           } catch (error) {
@@ -169,16 +170,16 @@ class BatchProcessor<T, R> {
             return null;
           }
         })
-      ).then(batch_results => {
+      ).then((batch_results) => {
         this.active_batches--;
         completed += batch.length;
         if (on_progress) {
           on_progress(completed, items.length);
         }
-        return batch_results.filter(r => r !== null) as R[];
+        return batch_results.filter((r) => r !== null) as R[];
       });
 
-      results.push(...await batch_promise);
+      results.push(...(await batch_promise));
     }
 
     return results;
@@ -199,7 +200,7 @@ export class PerformanceOptimizer {
   private rate_limiter: RateLimiter;
   private batch_processor: BatchProcessor<any, any>;
   private metrics: PerformanceMetrics;
-  private memory_monitor: NodeJS.Timer | null = null;
+  private memory_monitor: NodeJS.Timeout | null = null;
 
   constructor(config: Partial<PerformanceConfig> = {}) {
     this.config = {
@@ -225,7 +226,10 @@ export class PerformanceOptimizer {
       this.config.rate_limiting.requests_per_second,
       this.config.rate_limiting.burst_limit
     );
-    this.batch_processor = new BatchProcessor(3, this.config.max_concurrent_searches);
+    this.batch_processor = new BatchProcessor(
+      3,
+      this.config.max_concurrent_searches
+    );
 
     this.metrics = {
       total_execution_time: 0,
@@ -245,14 +249,14 @@ export class PerformanceOptimizer {
   // Optimize research plan execution order
   optimize_execution_plan(plan: ResearchPlan): ResearchSubquery[] {
     const subqueries = [...plan.subqueries];
-    
+
     if (!this.config.adaptive_batching) {
       return subqueries.sort((a, b) => b.priority - a.priority);
     }
 
     // Create dependency graph
     const dependency_map = new Map<string, string[]>();
-    subqueries.forEach(sq => {
+    subqueries.forEach((sq) => {
       dependency_map.set(sq.id, sq.dependencies || []);
     });
 
@@ -270,14 +274,14 @@ export class PerformanceOptimizer {
       }
 
       temp_visited.add(subquery.id);
-      
+
       const dependencies = dependency_map.get(subquery.id) || [];
       const dep_subqueries = dependencies
-        .map(dep_id => subqueries.find(sq => sq.id === dep_id))
-        .filter(sq => sq !== undefined) as ResearchSubquery[];
-      
+        .map((dep_id) => subqueries.find((sq) => sq.id === dep_id))
+        .filter((sq) => sq !== undefined) as ResearchSubquery[];
+
       dep_subqueries.forEach(visit);
-      
+
       temp_visited.delete(subquery.id);
       visited.add(subquery.id);
       sorted.push(subquery);
@@ -285,7 +289,7 @@ export class PerformanceOptimizer {
 
     // Sort by priority first, then apply topological sort
     const priority_sorted = subqueries.sort((a, b) => b.priority - a.priority);
-    priority_sorted.forEach(sq => {
+    priority_sorted.forEach((sq) => {
       if (!visited.has(sq.id)) {
         visit(sq);
       }
@@ -302,9 +306,11 @@ export class PerformanceOptimizer {
     const start_time = Date.now();
     const results = new Map<string, SearchResult[]>();
 
-    const search_with_cache = async (subquery: ResearchSubquery): Promise<{ id: string; results: SearchResult[] }> => {
+    const search_with_cache = async (
+      subquery: ResearchSubquery
+    ): Promise<{ id: string; results: SearchResult[] }> => {
       const cache_key = `search:${subquery.query}`;
-      
+
       // Check cache first
       if (this.config.cache_enabled) {
         const cached = this.cache.get(cache_key);
@@ -320,8 +326,11 @@ export class PerformanceOptimizer {
       // Execute search with timeout
       const search_results = await Promise.race([
         search_function(subquery.query),
-        new Promise<SearchResult[]>((_, reject) => 
-          setTimeout(() => reject(new Error("Search timeout")), this.config.search_timeout)
+        new Promise<SearchResult[]>((_, reject) =>
+          setTimeout(
+            () => reject(new Error("Search timeout")),
+            this.config.search_timeout
+          )
         ),
       ]);
 
@@ -343,7 +352,7 @@ export class PerformanceOptimizer {
     );
 
     // Organize results by subquery ID
-    search_results.forEach(result => {
+    search_results.forEach((result) => {
       if (result) {
         results.set(result.id, result.results);
       }
@@ -361,10 +370,12 @@ export class PerformanceOptimizer {
     scrape_function: (url: string) => Promise<ScrapedContent>
   ): Promise<ScrapedContent[]> {
     const start_time = Date.now();
-    
-    const scrape_with_cache = async (url: string): Promise<ScrapedContent | null> => {
+
+    const scrape_with_cache = async (
+      url: string
+    ): Promise<ScrapedContent | null> => {
       const cache_key = `scrape:${url}`;
-      
+
       // Check cache first
       if (this.config.cache_enabled) {
         const cached = this.cache.get(cache_key);
@@ -381,8 +392,11 @@ export class PerformanceOptimizer {
         // Execute scrape with timeout
         const scraped_content = await Promise.race([
           scrape_function(url),
-          new Promise<ScrapedContent>((_, reject) => 
-            setTimeout(() => reject(new Error("Scrape timeout")), this.config.scrape_timeout)
+          new Promise<ScrapedContent>((_, reject) =>
+            setTimeout(
+              () => reject(new Error("Scrape timeout")),
+              this.config.scrape_timeout
+            )
           ),
         ]);
 
@@ -412,8 +426,10 @@ export class PerformanceOptimizer {
       }
     );
 
-    const valid_results = scraping_results.filter(r => r !== null) as ScrapedContent[];
-    
+    const valid_results = scraping_results.filter(
+      (r) => r !== null
+    ) as ScrapedContent[];
+
     this.metrics.scraping_time = Date.now() - start_time;
     log.info(`Optimized scraping completed in ${this.metrics.scraping_time}ms`);
 
@@ -429,8 +445,11 @@ export class PerformanceOptimizer {
 
     // Check memory usage before synthesis
     const memory_before = process.memoryUsage().heapUsed;
-    
-    if (memory_before > this.config.memory_management.max_memory_usage * 1024 * 1024) {
+
+    if (
+      memory_before >
+      this.config.memory_management.max_memory_usage * 1024 * 1024
+    ) {
       log.warn("High memory usage detected, forcing garbage collection");
       if (global.gc) {
         global.gc();
@@ -438,26 +457,38 @@ export class PerformanceOptimizer {
     }
 
     const result = await synthesis_function(data);
-    
+
     this.metrics.synthesis_time = Date.now() - start_time;
     this.metrics.memory_usage = process.memoryUsage().heapUsed / (1024 * 1024); // MB
 
-    log.info(`Optimized synthesis completed in ${this.metrics.synthesis_time}ms`);
-    
+    log.info(
+      `Optimized synthesis completed in ${this.metrics.synthesis_time}ms`
+    );
+
     return result;
   }
 
   // Adaptive batch size optimization
-  optimize_batch_sizes(operation_times: number[]): { search_batch: number; scrape_batch: number } {
+  optimize_batch_sizes(operation_times: number[]): {
+    search_batch: number;
+    scrape_batch: number;
+  } {
     if (operation_times.length === 0) {
       return { search_batch: 3, scrape_batch: 2 };
     }
 
-    const avg_time = operation_times.reduce((a, b) => a + b, 0) / operation_times.length;
+    const avg_time =
+      operation_times.reduce((a, b) => a + b, 0) / operation_times.length;
     const target_time = 5000; // 5 seconds per batch
 
-    const optimal_search_batch = Math.max(1, Math.min(10, Math.floor(target_time / avg_time)));
-    const optimal_scrape_batch = Math.max(1, Math.min(5, Math.floor(optimal_search_batch / 2)));
+    const optimal_search_batch = Math.max(
+      1,
+      Math.min(10, Math.floor(target_time / avg_time))
+    );
+    const optimal_scrape_batch = Math.max(
+      1,
+      Math.min(5, Math.floor(optimal_search_batch / 2))
+    );
 
     return {
       search_batch: optimal_search_batch,
@@ -469,10 +500,13 @@ export class PerformanceOptimizer {
   get_performance_metrics(): PerformanceMetrics {
     this.metrics.cache_hit_rate = this.cache.get_hit_rate();
     this.metrics.memory_usage = process.memoryUsage().heapUsed / (1024 * 1024); // MB
-    
-    const total_time = this.metrics.search_time + this.metrics.scraping_time + this.metrics.synthesis_time;
+
+    const total_time =
+      this.metrics.search_time +
+      this.metrics.scraping_time +
+      this.metrics.synthesis_time;
     this.metrics.total_execution_time = total_time;
-    
+
     if (total_time > 0) {
       this.metrics.throughput = 1000 / total_time; // operations per second
     }
@@ -484,7 +518,7 @@ export class PerformanceOptimizer {
   private start_memory_monitoring(): void {
     this.memory_monitor = setInterval(() => {
       const memory_usage = process.memoryUsage().heapUsed / (1024 * 1024); // MB
-      
+
       if (memory_usage > this.config.memory_management.max_memory_usage) {
         log.warn(`High memory usage: ${memory_usage.toFixed(2)}MB`);
         this.cleanup();
@@ -515,7 +549,7 @@ export class PerformanceOptimizer {
       clearInterval(this.memory_monitor);
       this.memory_monitor = null;
     }
-    
+
     this.cache.clear();
     log.info("Performance optimizer disposed");
   }
@@ -551,26 +585,30 @@ export class PerformanceOptimizer {
       synthesis: metrics.synthesis_time,
     };
 
-    const bottleneck = Object.entries(times).reduce((a, b) => 
-      times[a[0] as keyof typeof times] > times[b[0] as keyof typeof times] ? a : b
+    const bottleneck = Object.entries(times).reduce((a, b) =>
+      times[a[0] as keyof typeof times] > times[b[0] as keyof typeof times]
+        ? a
+        : b
     )[0];
 
     const recommendations: string[] = [];
 
     switch (bottleneck) {
-      case 'search':
+      case "search":
         recommendations.push("Increase concurrent search limit");
         recommendations.push("Enable caching if not already enabled");
         recommendations.push("Optimize search query complexity");
         break;
-      case 'scraping':
+      case "scraping":
         recommendations.push("Increase concurrent scraping limit");
         recommendations.push("Reduce scraping timeout");
         recommendations.push("Implement content filtering to scrape less data");
         break;
-      case 'synthesis':
+      case "synthesis":
         recommendations.push("Optimize synthesis algorithms");
-        recommendations.push("Implement streaming synthesis for large datasets");
+        recommendations.push(
+          "Implement streaming synthesis for large datasets"
+        );
         recommendations.push("Increase memory limits if needed");
         break;
     }

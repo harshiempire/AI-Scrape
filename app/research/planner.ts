@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { LLM } from "../llm";
-import { Memory, Message, Role } from "../../schema";
+import { Memory, Message } from "../../schema";
 import { log } from "../logger";
 
 // Research query decomposition schemas
@@ -80,22 +80,26 @@ Return your response as a JSON object matching this exact structure:
 
     this.memory.clear();
     this.memory.add_message(Message.system_message(this.get_planning_prompt()));
-    this.memory.add_message(Message.user_message(
-      `Please create a comprehensive research plan for this query: "${query}"`
-    ));
+    this.memory.add_message(
+      Message.user_message(
+        `Please create a comprehensive research plan for this query: "${query}"`
+      )
+    );
 
     try {
-      const response = await this.llm.generate(
+      const response = await this.llm.ask(
         this.memory.to_dict_list(),
-        { temperature: 0.3, max_tokens: 2000 }
+        undefined,
+        false,
+        0.3
       );
 
-      if (!response.content) {
+      if (!response) {
         throw new Error("No response content from LLM");
       }
 
       // Extract JSON from response
-      const jsonMatch = response.content.match(/\{[\s\S]*\}/);
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
         throw new Error("No valid JSON found in response");
       }
@@ -103,33 +107,49 @@ Return your response as a JSON object matching this exact structure:
       const planData = JSON.parse(jsonMatch[0]);
       const validatedPlan = ResearchPlanSchema.parse(planData);
 
-      log.info(`Research plan created with ${validatedPlan.subqueries.length} subqueries`);
+      log.info(
+        `Research plan created with ${validatedPlan.subqueries.length} subqueries`
+      );
       return validatedPlan;
-
     } catch (error) {
       log.error("Failed to create research plan:", error);
-      throw new Error(`Research planning failed: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(
+        `Research planning failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
     }
   }
 
-  async refine_plan(plan: ResearchPlan, feedback: string): Promise<ResearchPlan> {
+  async refine_plan(
+    plan: ResearchPlan,
+    feedback: string
+  ): Promise<ResearchPlan> {
     log.info("Refining research plan based on feedback");
 
-    this.memory.add_message(Message.user_message(
-      `Based on this feedback: "${feedback}", please refine the research plan. Current plan: ${JSON.stringify(plan, null, 2)}`
-    ));
+    this.memory.add_message(
+      Message.user_message(
+        `Based on this feedback: "${feedback}", please refine the research plan. Current plan: ${JSON.stringify(
+          plan,
+          null,
+          2
+        )}`
+      )
+    );
 
     try {
-      const response = await this.llm.generate(
+      const response = await this.llm.ask(
         this.memory.to_dict_list(),
-        { temperature: 0.3, max_tokens: 2000 }
+        undefined,
+        false,
+        0.3
       );
 
-      if (!response.content) {
+      if (!response) {
         throw new Error("No response content from LLM");
       }
 
-      const jsonMatch = response.content.match(/\{[\s\S]*\}/);
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
         throw new Error("No valid JSON found in response");
       }
@@ -139,38 +159,42 @@ Return your response as a JSON object matching this exact structure:
 
       log.info("Research plan refined successfully");
       return refinedPlan;
-
     } catch (error) {
       log.error("Failed to refine research plan:", error);
       return plan; // Return original plan if refinement fails
     }
   }
 
-  get_next_subquery(plan: ResearchPlan, completed_ids: string[]): ResearchSubquery | null {
+  get_next_subquery(
+    plan: ResearchPlan,
+    completed_ids: string[]
+  ): ResearchSubquery | null {
     // Filter out completed subqueries
-    const remaining = plan.subqueries.filter(sq => !completed_ids.includes(sq.id));
-    
+    const remaining = plan.subqueries.filter(
+      (sq) => !completed_ids.includes(sq.id)
+    );
+
     if (remaining.length === 0) {
       return null;
     }
 
     // Find subqueries with no unmet dependencies
-    const available = remaining.filter(sq => {
+    const available = remaining.filter((sq) => {
       if (!sq.dependencies || sq.dependencies.length === 0) {
         return true;
       }
-      return sq.dependencies.every(dep => completed_ids.includes(dep));
+      return sq.dependencies.every((dep) => completed_ids.includes(dep));
     });
 
     if (available.length === 0) {
       // If no available subqueries due to dependencies, return highest priority remaining
-      return remaining.reduce((highest, current) => 
+      return remaining.reduce((highest, current) =>
         current.priority > highest.priority ? current : highest
       );
     }
 
     // Return highest priority available subquery
-    return available.reduce((highest, current) => 
+    return available.reduce((highest, current) =>
       current.priority > highest.priority ? current : highest
     );
   }

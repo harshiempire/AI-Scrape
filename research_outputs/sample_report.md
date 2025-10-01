@@ -1,6 +1,6 @@
 # Deep Research Report: Environmental Impact of Electric Vehicles
 
-**Generated:** 2025-09-29T16:41:57.560Z  
+**Generated:** 2025-09-30T10:46:36.445Z  
 **Total Sources:** 15  
 **Overall Confidence:** 82%
 

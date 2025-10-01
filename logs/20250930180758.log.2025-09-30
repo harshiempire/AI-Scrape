@@ -1,0 +1,5 @@
+{"level":"info","message":"Token usage: Input=0, Completion=0, Cumulative Input=0, Cumulative Completion=0, Total=0, Cumulative Total=0","timestamp":"2025-09-30 23:38:02"}
+{"0":"duckduckgo","level":"info","message":"Real web search tool initialized with engines:","timestamp":"2025-09-30 23:38:02"}
+{"level":"info","message":"Executing real web search for: \"renewable energy benefits\"","timestamp":"2025-09-30 23:38:02"}
+{"level":"info","message":"Searching with DuckDuckGo","timestamp":"2025-09-30 23:38:02"}
+{"level":"info","message":"duckduckgo search completed: 0 results","timestamp":"2025-09-30 23:38:02"}

@@ -1,9 +1,9 @@
 /**
  * Deep Research Agent - Industry Standard Research System
- * 
+ *
  * This module provides a comprehensive deep research agent that follows
  * industry standards for AI-powered research and analysis.
- * 
+ *
  * Key Features:
  * - Advanced query decomposition and research planning
  * - Multi-source web search and intelligent scraping
@@ -12,83 +12,73 @@
  * - Structured report generation in multiple formats
  * - Quality assessment and confidence scoring
  * - Performance optimization and parallel processing
- * 
+ *
  * @example
  * ```typescript
  * import { DeepResearchAgent } from './app/research';
- * 
+ *
  * const agent = new DeepResearchAgent({
  *   confidence_threshold: 0.8,
  *   citation_style: 'apa',
  *   parallel_processing: true,
  * });
- * 
+ *
  * const report = await agent.conduct_research(
  *   "What are the impacts of climate change on global agriculture?"
  * );
- * 
+ *
  * console.log(report.content);
  * ```
  */
 
 // Main agent class
-export { DeepResearchAgent } from './deep_research_agent';
-export type { DeepResearchAgentConfig } from './deep_research_agent';
+export { DeepResearchAgent } from "./deep_research_agent";
+export type { DeepResearchAgentConfig } from "./deep_research_agent";
 
 // Research planning
-export { ResearchPlanner } from './planner';
-export type { ResearchPlan, ResearchSubquery } from './planner';
+export { ResearchPlanner } from "./planner";
+export type { ResearchPlan, ResearchSubquery } from "./planner";
 
 // Information synthesis
-export { InformationSynthesizer } from './synthesizer';
-export type { 
-  ResearchSynthesis, 
-  SynthesizedInsight, 
-  SourceInfo 
-} from './synthesizer';
+export { InformationSynthesizer } from "./synthesizer";
+export type {
+  ResearchSynthesis,
+  SynthesizedInsight,
+  SourceInfo,
+} from "./synthesizer";
 
 // Citation management
-export { CitationManager } from './citation';
-export type { 
-  Citation, 
-  BibliographyEntry, 
-  CitationReport 
-} from './citation';
+export { CitationManager } from "./citation";
+export type { Citation, BibliographyEntry, CitationReport } from "./citation";
 
 // Report generation
-export { ReportGenerator } from './report_generator';
-export type { 
-  ReportConfig, 
-  GeneratedReport 
-} from './report_generator';
+export { ReportGenerator } from "./report_generator";
+export type { ReportConfig, GeneratedReport } from "./report_generator";
 
 // Quality validation
-export { QualityValidator } from './quality_validator';
-export type { 
-  QualityReport, 
-  QualityMetrics, 
-  ValidationIssue 
-} from './quality_validator';
+export { QualityValidator } from "./quality_validator";
+export type {
+  QualityReport,
+  QualityMetrics,
+  ValidationIssue,
+} from "./quality_validator";
 
 // Research memory
-export { ResearchMemory } from './memory';
-export type { 
-  ResearchContext, 
-  ResearchState 
-} from './memory';
+export { ResearchMemory } from "./memory";
+export type { ResearchContext, ResearchState } from "./memory";
 
 // Performance optimization
-export { PerformanceOptimizer } from './performance_optimizer';
-export type { PerformanceConfig, PerformanceMetrics } from './performance_optimizer';
+export { PerformanceOptimizer } from "./performance_optimizer";
+export type {
+  PerformanceConfig,
+  PerformanceMetrics,
+} from "./performance_optimizer";
 
 // Research tools
-export { WebSearchTool } from './tools/web_search';
-export { WebScraperTool } from './tools/web_scraper';
-export type { 
-  SearchResult, 
-  WebSearchResult 
-} from './tools/web_search';
-export type { ScrapedContent } from './tools/web_scraper';
+export { WebSearchTool } from "./tools/web_search";
+export { WebScraperTool } from "./tools/web_scraper";
+export type { SearchResult, WebSearchResult } from "./tools/web_search";
+export type { ScrapedContent } from "./tools/web_scraper";
 
 // Utility functions for common research tasks
 export const ResearchUtils = {
@@ -100,7 +90,7 @@ export const ResearchUtils = {
     max_scraping_depth: 3,
     confidence_threshold: 0.6,
     parallel_processing: true,
-    citation_style: 'apa' as const,
+    citation_style: "apa" as const,
   }),
 
   /**
@@ -111,7 +101,7 @@ export const ResearchUtils = {
     max_scraping_depth: 15,
     confidence_threshold: 0.85,
     parallel_processing: true,
-    citation_style: 'ieee' as const,
+    citation_style: "ieee" as const,
   }),
 
   /**
@@ -122,8 +112,8 @@ export const ResearchUtils = {
     max_scraping_depth: 10,
     confidence_threshold: 0.8,
     parallel_processing: true,
-    citation_style: 'apa' as const,
-    search_engines: ['google', 'bing'],
+    citation_style: "apa" as const,
+    search_engines: ["google", "bing"],
   }),
 
   /**
@@ -134,13 +124,15 @@ export const ResearchUtils = {
     max_scraping_depth: 8,
     confidence_threshold: 0.7,
     parallel_processing: true,
-    citation_style: 'chicago' as const,
+    citation_style: "chicago" as const,
   }),
 
   /**
    * Validate a research query for complexity and feasibility
    */
-  validateQuery: (query: string): { valid: boolean; issues: string[]; suggestions: string[] } => {
+  validateQuery: (
+    query: string
+  ): { valid: boolean; issues: string[]; suggestions: string[] } => {
     const issues: string[] = [];
     const suggestions: string[] = [];
 
@@ -160,13 +152,23 @@ export const ResearchUtils = {
       suggestions.push("Include more specific terms and context");
     }
 
-    const question_words = ['what', 'how', 'why', 'when', 'where', 'who', 'which'];
-    const has_question_word = question_words.some(word => 
+    const question_words = [
+      "what",
+      "how",
+      "why",
+      "when",
+      "where",
+      "who",
+      "which",
+    ];
+    const has_question_word = question_words.some((word) =>
       query.toLowerCase().includes(word)
     );
 
-    if (!has_question_word && !query.includes('?')) {
-      suggestions.push("Consider framing as a specific question for better results");
+    if (!has_question_word && !query.includes("?")) {
+      suggestions.push(
+        "Consider framing as a specific question for better results"
+      );
     }
 
     return {
@@ -179,39 +181,50 @@ export const ResearchUtils = {
   /**
    * Estimate research complexity and time requirements
    */
-  estimateComplexity: (query: string): { 
-    complexity: 'low' | 'medium' | 'high' | 'very_high';
+  estimateComplexity: (
+    query: string
+  ): {
+    complexity: "low" | "medium" | "high" | "very_high";
     estimated_time: number; // minutes
     recommended_sources: number;
   } => {
     const words = query.split(/\s+/).length;
     const complex_terms = [
-      'analyze', 'compare', 'evaluate', 'assess', 'impact', 'implications',
-      'trends', 'future', 'prediction', 'comprehensive', 'detailed'
+      "analyze",
+      "compare",
+      "evaluate",
+      "assess",
+      "impact",
+      "implications",
+      "trends",
+      "future",
+      "prediction",
+      "comprehensive",
+      "detailed",
     ];
-    
-    const complexity_indicators = complex_terms.filter(term => 
+
+    const complexity_indicators = complex_terms.filter((term) =>
       query.toLowerCase().includes(term)
     ).length;
 
-    let complexity: 'low' | 'medium' | 'high' | 'very_high';
+    let complexity: "low" | "medium" | "high" | "very_high";
     let estimated_time: number;
     let recommended_sources: number;
 
     if (words <= 5 && complexity_indicators === 0) {
-      complexity = 'low';
+      complexity = "low";
       estimated_time = 5;
       recommended_sources = 5;
     } else if (words <= 10 && complexity_indicators <= 1) {
-      complexity = 'medium';
+      complexity = "medium";
       estimated_time = 15;
       recommended_sources = 10;
     } else if (words <= 20 && complexity_indicators <= 3) {
-      complexity = 'high';
+      complexity = "high";
       estimated_time = 30;
       recommended_sources = 15;
     } else {
-      complexity = 'very_high';
+      complexity = "very_high";
       estimated_time = 60;
       recommended_sources = 25;
     }
@@ -221,8 +234,12 @@ export const ResearchUtils = {
 };
 
 // Version information
-export const VERSION = '1.0.0';
+export const VERSION = "1.0.0";
 export const BUILD_DATE = new Date().toISOString();
 
+// Production agent
+export { ProductionDeepResearchAgent } from "./production_deep_research_agent";
+export type { ProductionResearchConfig } from "./production_deep_research_agent";
+
 // Default export for convenience
-export { DeepResearchAgent as default };
+export { ProductionDeepResearchAgent as default };

@@ -27,24 +27,42 @@ export type WebSearchResult = z.infer<typeof WebSearchResultSchema>;
 // Web search tool input schema
 const WebSearchInputSchema = z.object({
   query: z.string().describe("The search query to execute"),
-  max_results: z.number().min(1).max(20).default(10).describe("Maximum number of results to return"),
-  domain_filter: z.string().optional().describe("Filter results to specific domain (e.g., 'site:wikipedia.org')"),
-  date_range: z.enum(["day", "week", "month", "year", "all"]).default("all").describe("Time range for results"),
-  result_type: z.enum(["web", "news", "academic", "images"]).default("web").describe("Type of search results"),
+  max_results: z
+    .number()
+    .min(1)
+    .max(20)
+    .default(10)
+    .describe("Maximum number of results to return"),
+  domain_filter: z
+    .string()
+    .optional()
+    .describe("Filter results to specific domain (e.g., 'site:wikipedia.org')"),
+  date_range: z
+    .enum(["day", "week", "month", "year", "all"])
+    .default("all")
+    .describe("Time range for results"),
+  result_type: z
+    .enum(["web", "news", "academic", "images"])
+    .default("web")
+    .describe("Type of search results"),
 });
 
 export class WebSearchTool extends BaseTool {
   private search_engines: string[];
   private api_keys: Record<string, string>;
 
-  constructor(config?: { search_engines?: string[]; api_keys?: Record<string, string> }) {
+  constructor(config?: {
+    search_engines?: string[];
+    api_keys?: Record<string, string>;
+  }) {
     super({
       name: "web_search",
-      description: "Search the web for information using multiple search engines and return structured results with relevance scoring",
+      description:
+        "Search the web for information using multiple search engines and return structured results with relevance scoring",
       schema: WebSearchInputSchema,
     });
 
-    this.search_engines = config?.search_engines || ["duckduckgo", "bing", "google"];
+    this.search_engines = config?.search_engines || ["serpapi"];
     this.api_keys = config?.api_keys || {};
   }
 
@@ -68,11 +86,17 @@ export class WebSearchTool extends BaseTool {
       return this.success_response(search_result);
     } catch (error) {
       log.error("Web search failed:", error);
-      return this.fail_response(`Web search failed: ${error instanceof Error ? error.message : String(error)}`);
+      return this.fail_response(
+        `Web search failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
     }
   }
 
-  private async perform_search(input: z.infer<typeof WebSearchInputSchema>): Promise<SearchResult[]> {
+  private async perform_search(
+    input: z.infer<typeof WebSearchInputSchema>
+  ): Promise<SearchResult[]> {
     // In a real implementation, this would use actual search APIs
     // For now, we'll simulate search results
     log.info(`Simulating search for: ${input.query}`);
@@ -80,7 +104,9 @@ export class WebSearchTool extends BaseTool {
     const mock_results: SearchResult[] = [
       {
         title: `Understanding ${input.query} - Comprehensive Guide`,
-        url: `https://example.com/guide/${input.query.toLowerCase().replace(/\s+/g, "-")}`,
+        url: `https://example.com/guide/${input.query
+          .toLowerCase()
+          .replace(/\s+/g, "-")}`,
         snippet: `A comprehensive guide covering all aspects of ${input.query}. This resource provides detailed information, analysis, and practical insights.`,
         domain: "example.com",
         published_date: new Date().toISOString().split("T")[0],
@@ -89,37 +115,53 @@ export class WebSearchTool extends BaseTool {
       },
       {
         title: `${input.query} - Latest Research and Findings`,
-        url: `https://research.edu/papers/${input.query.toLowerCase().replace(/\s+/g, "-")}`,
+        url: `https://research.edu/papers/${input.query
+          .toLowerCase()
+          .replace(/\s+/g, "-")}`,
         snippet: `Recent academic research and findings related to ${input.query}. Peer-reviewed studies and expert analysis.`,
         domain: "research.edu",
-        published_date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+        published_date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split("T")[0],
         relevance_score: 0.88,
         source_authority: 9,
       },
       {
         title: `${input.query} News and Updates`,
-        url: `https://news.com/category/${input.query.toLowerCase().replace(/\s+/g, "-")}`,
+        url: `https://news.com/category/${input.query
+          .toLowerCase()
+          .replace(/\s+/g, "-")}`,
         snippet: `Latest news, updates, and developments in ${input.query}. Stay informed with breaking news and analysis.`,
         domain: "news.com",
-        published_date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+        published_date: new Date(Date.now() - 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split("T")[0],
         relevance_score: 0.82,
         source_authority: 7,
       },
       {
         title: `${input.query} - Industry Analysis`,
-        url: `https://industry-insights.com/analysis/${input.query.toLowerCase().replace(/\s+/g, "-")}`,
+        url: `https://industry-insights.com/analysis/${input.query
+          .toLowerCase()
+          .replace(/\s+/g, "-")}`,
         snippet: `Professional industry analysis and market insights for ${input.query}. Expert opinions and data-driven conclusions.`,
         domain: "industry-insights.com",
-        published_date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+        published_date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split("T")[0],
         relevance_score: 0.79,
         source_authority: 8,
       },
       {
         title: `${input.query} FAQ and Common Questions`,
-        url: `https://knowledge-base.org/faq/${input.query.toLowerCase().replace(/\s+/g, "-")}`,
+        url: `https://knowledge-base.org/faq/${input.query
+          .toLowerCase()
+          .replace(/\s+/g, "-")}`,
         snippet: `Frequently asked questions and answers about ${input.query}. Community-driven knowledge base with expert verification.`,
         domain: "knowledge-base.org",
-        published_date: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+        published_date: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split("T")[0],
         relevance_score: 0.75,
         source_authority: 6,
       },
@@ -128,14 +170,19 @@ export class WebSearchTool extends BaseTool {
     // Apply domain filter if specified
     if (input.domain_filter) {
       const domain = input.domain_filter.replace("site:", "");
-      return mock_results.filter(result => result.domain.includes(domain));
+      return mock_results.filter((result) => result.domain.includes(domain));
     }
 
     // Sort by relevance score
-    return mock_results.sort((a, b) => (b.relevance_score || 0) - (a.relevance_score || 0));
+    return mock_results.sort(
+      (a, b) => (b.relevance_score || 0) - (a.relevance_score || 0)
+    );
   }
 
-  private generate_suggestions(query: string, results: SearchResult[]): string[] {
+  private generate_suggestions(
+    query: string,
+    results: SearchResult[]
+  ): string[] {
     // Generate search suggestions based on query and results
     const suggestions = [
       `${query} definition`,
@@ -149,18 +196,24 @@ export class WebSearchTool extends BaseTool {
   }
 
   // Method to search specific domains with high authority
-  async search_authoritative_sources(query: string, domains: string[] = []): Promise<SearchResult[]> {
-    const authoritative_domains = domains.length > 0 ? domains : [
-      "wikipedia.org",
-      "gov",
-      "edu",
-      "nature.com",
-      "science.org",
-      "arxiv.org",
-      "reuters.com",
-      "bbc.com",
-      "economist.com",
-    ];
+  async search_authoritative_sources(
+    query: string,
+    domains: string[] = []
+  ): Promise<SearchResult[]> {
+    const authoritative_domains =
+      domains.length > 0
+        ? domains
+        : [
+            "wikipedia.org",
+            "gov",
+            "edu",
+            "nature.com",
+            "science.org",
+            "arxiv.org",
+            "reuters.com",
+            "bbc.com",
+            "economist.com",
+          ];
 
     const all_results: SearchResult[] = [];
 
