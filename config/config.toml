@@ -1,7 +1,6 @@
 [llm]
 model = "gpt-4o-mini"
 base_url = "https://api.openai.com/v1"
-api_key = "cJEfGzm6hPuoH4ZqJ47gD5WaCJ8Hc4Oi9OXKv4J9EZUWIwoeuug--CsCXmT3BlbkFJfy0U2ReKcy_gJY8-Te2y6_iob26zRYjJO0rUTv6OxNh5xMbBgX6V0FIkGtQMv5MIadVoTvHiAA"
 max_tokens = 4096
 temperature = 0.7
 api_type = "openai"
@@ -9,7 +8,6 @@ api_version = ""
 
 [search]
 timeout = 30000
-serpapi_key = "9706113c5d889818f94dead43ffb0a4ac0b387a03f91c124ccbfa11278330"
 
 [browser]
 headless = true
