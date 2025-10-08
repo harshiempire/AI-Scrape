@@ -31,7 +31,7 @@ class AIService: ObservableObject {
                         .foregroundColor(.gray)
                 }
                 .padding()
-                .background(.glassMaterial, in: RoundedRectangle(cornerRadius: 12))
+                .background( in: RoundedRectangle(cornerRadius: 12))
             }
         }
         """

@@ -13,6 +13,11 @@
 		A1234567890123456789013A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1234567890123456789013B /* Preview Assets.xcassets */; };
 		A1234567890123456789014C /* AIFeatures.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890123456789014D /* AIFeatures.swift */; };
 		A1234567890123456789014E /* LaunchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890123456789014F /* LaunchScreen.swift */; };
+		A1234567890123456789015A /* JournalModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890123456789015B /* JournalModels.swift */; };
+		A1234567890123456789015C /* JournalManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890123456789015D /* JournalManager.swift */; };
+		A1234567890123456789015E /* JournalViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890123456789015F /* JournalViews.swift */; };
+		A1234567890123456789016A /* EntryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890123456789016B /* EntryViews.swift */; };
+		A1234567890123456789016C /* SettingsViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890123456789016D /* SettingsViews.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +28,11 @@
 		A1234567890123456789013B /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		A1234567890123456789014D /* AIFeatures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIFeatures.swift; sourceTree = "<group>"; };
 		A1234567890123456789014F /* LaunchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreen.swift; sourceTree = "<group>"; };
+		A1234567890123456789015B /* JournalModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalModels.swift; sourceTree = "<group>"; };
+		A1234567890123456789015D /* JournalManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalManager.swift; sourceTree = "<group>"; };
+		A1234567890123456789015F /* JournalViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalViews.swift; sourceTree = "<group>"; };
+		A1234567890123456789016B /* EntryViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryViews.swift; sourceTree = "<group>"; };
+		A1234567890123456789016D /* SettingsViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViews.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,6 +59,11 @@
 			children = (
 				A1234567890123456789012B /* ModerniOS26AppApp.swift */,
 				A1234567890123456789012D /* ContentView.swift */,
+				A1234567890123456789015B /* JournalModels.swift */,
+				A1234567890123456789015D /* JournalManager.swift */,
+				A1234567890123456789015F /* JournalViews.swift */,
+				A1234567890123456789016B /* EntryViews.swift */,
+				A1234567890123456789016D /* SettingsViews.swift */,
 				A1234567890123456789014D /* AIFeatures.swift */,
 				A1234567890123456789014F /* LaunchScreen.swift */,
 				A1234567890123456789012F /* Assets.xcassets */,
@@ -145,6 +160,11 @@
 			files = (
 				A1234567890123456789012C /* ContentView.swift in Sources */,
 				A1234567890123456789012A /* ModerniOS26AppApp.swift in Sources */,
+				A1234567890123456789015A /* JournalModels.swift in Sources */,
+				A1234567890123456789015C /* JournalManager.swift in Sources */,
+				A1234567890123456789015E /* JournalViews.swift in Sources */,
+				A1234567890123456789016A /* EntryViews.swift in Sources */,
+				A1234567890123456789016C /* SettingsViews.swift in Sources */,
 				A1234567890123456789014C /* AIFeatures.swift in Sources */,
 				A1234567890123456789014E /* LaunchScreen.swift in Sources */,
 			);

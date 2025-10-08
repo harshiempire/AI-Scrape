@@ -1,34 +1,49 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var isAnimating = false
+    @StateObject private var journalManager = JournalManager()
     @State private var selectedTab = 0
-    @State private var showingAIFeatures = false
+    @State private var showingNewEntry = false
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            HomeView()
+            JournalHomeView()
+                .environmentObject(journalManager)
                 .tabItem {
-                    Image(systemName: "house.fill")
-                    Text("Home")
+                    Image(systemName: "book.fill")
+                    Text("Journal")
                 }
                 .tag(0)
             
-            AIDashboardView()
+            EntriesListView()
+                .environmentObject(journalManager)
                 .tabItem {
-                    Image(systemName: "brain.head.profile")
-                    Text("AI")
+                    Image(systemName: "list.bullet")
+                    Text("Entries")
                 }
                 .tag(1)
             
-            SettingsView()
+            StatsView()
+                .environmentObject(journalManager)
+                .tabItem {
+                    Image(systemName: "chart.bar.fill")
+                    Text("Stats")
+                }
+                .tag(2)
+            
+            AppSettingsView()
+                .environmentObject(journalManager)
                 .tabItem {
                     Image(systemName: "gearshape.fill")
                     Text("Settings")
                 }
-                .tag(2)
+                .tag(3)
         }
         .accentColor(.white)
+        .sheet(isPresented: $showingNewEntry) {
+            NewEntryView()
+                .environmentObject(journalManager)
+        }
     }
 }
 
@@ -316,7 +331,7 @@ struct AIFeatureCard: View {
     }
 }
 
-struct SettingsView: View {
+struct AppSettingsView: View {
     @State private var notificationsEnabled = true
     @State private var aiAssistanceEnabled = true
     @State private var liquidGlassEnabled = true
@@ -361,19 +376,19 @@ struct SettingsView: View {
                         
                         // Settings Options
                         VStack(spacing: 16) {
-                            SettingsRow(
+                            AppSettingsRow(
                                 icon: "bell.fill",
                                 title: "Notifications",
                                 isOn: $notificationsEnabled
                             )
                             
-                            SettingsRow(
+                            AppSettingsRow(
                                 icon: "brain.head.profile",
                                 title: "AI Assistance",
                                 isOn: $aiAssistanceEnabled
                             )
                             
-                            SettingsRow(
+                            AppSettingsRow(
                                 icon: "sparkles",
                                 title: "Liquid Glass UI",
                                 isOn: $liquidGlassEnabled
@@ -406,7 +421,7 @@ struct SettingsView: View {
     }
 }
 
-struct SettingsRow: View {
+struct AppSettingsRow: View {
     let icon: String
     let title: String
     @Binding var isOn: Bool

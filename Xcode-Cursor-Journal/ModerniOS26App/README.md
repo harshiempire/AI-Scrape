@@ -1,6 +1,6 @@
-# Modern iOS 26 App
+# Modern Journal - iOS 26
 
-A cutting-edge iOS application built with Xcode 26, Swift 6, and iOS 26, showcasing the latest features and design patterns for 2025.
+A beautiful, AI-powered journaling app built with Xcode 26, Swift 6, and iOS 26. Capture your thoughts, track your mood, and gain insights into your writing patterns with advanced AI analysis.
 
 ## Features
 
