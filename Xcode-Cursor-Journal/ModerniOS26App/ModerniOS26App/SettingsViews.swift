@@ -6,6 +6,7 @@ struct SettingsView: View {
     @State private var showingThemePicker = false
     @State private var showingExportSheet = false
     @State private var showingImportSheet = false
+    @State private var aiService = RealAIService()
     
     var body: some View {
         NavigationView {
@@ -112,6 +113,88 @@ struct SettingsView: View {
                         .padding()
                         .background(in: RoundedRectangle(cornerRadius: 20))
                         
+                        // AI Privacy Settings
+                        VStack(spacing: 16) {
+                            Text("AI Privacy Settings")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.white)
+                            
+                            PrivacyModeCard(
+                                status: PrivacyStatus(
+                                    mode: .private,
+                                    description: "All AI processing happens on your device",
+                                    features: ["On-device sentiment analysis", "Local pattern detection", "Basic insights"],
+                                    icon: "lock.shield",
+                                    color: .green
+                                ),
+                                isSelected: journalManager.settings.privacyMode == .private
+                            ) {
+                                var settings = journalManager.settings
+                                settings.privacyMode = .private
+                                journalManager.updateSettings(settings)
+                            }
+                            
+                            PrivacyModeCard(
+                                status: PrivacyStatus(
+                                    mode: .enhanced,
+                                    description: "Advanced AI features with cloud processing",
+                                    features: ["Deep pattern analysis", "Personalized prompts", "Weekly summaries", "Semantic search"],
+                                    icon: "cloud.bolt",
+                                    color: .blue
+                                ),
+                                isSelected: journalManager.settings.privacyMode == .enhanced
+                            ) {
+                                var settings = journalManager.settings
+                                settings.privacyMode = .enhanced
+                                journalManager.updateSettings(settings)
+                            }
+                            
+                            // AI Feature Toggles
+                            VStack(spacing: 12) {
+                                SettingsRow(
+                                    icon: "brain.head.profile",
+                                    title: "Smart Prompts",
+                                    isOn: Binding(
+                                        get: { journalManager.settings.enableSmartPrompts },
+                                        set: { newValue in
+                                            var settings = journalManager.settings
+                                            settings.enableSmartPrompts = newValue
+                                            journalManager.updateSettings(settings)
+                                        }
+                                    )
+                                )
+                                
+                                SettingsRow(
+                                    icon: "calendar.badge.clock",
+                                    title: "Weekly Summaries",
+                                    isOn: Binding(
+                                        get: { journalManager.settings.enableWeeklySummaries },
+                                        set: { newValue in
+                                            var settings = journalManager.settings
+                                            settings.enableWeeklySummaries = newValue
+                                            journalManager.updateSettings(settings)
+                                        }
+                                    )
+                                )
+                                
+                                SettingsRow(
+                                    icon: "person.2.fill",
+                                    title: "Relationship Tracking",
+                                    isOn: Binding(
+                                        get: { journalManager.settings.enableRelationshipTracking },
+                                        set: { newValue in
+                                            var settings = journalManager.settings
+                                            settings.enableRelationshipTracking = newValue
+                                            journalManager.updateSettings(settings)
+                                        }
+                                    )
+                                )
+                            }
+                        }
+                        .padding()
+                        .background(in: RoundedRectangle(cornerRadius: 20))
+                        
                         // Theme Selection
                         VStack(spacing: 16) {
                             Text("Appearance")
@@ -178,6 +261,41 @@ struct SettingsView: View {
                                 }
                                 .padding()
                                 .background( in: RoundedRectangle(cornerRadius: 12))
+                            }
+                            
+                            // AI Data Management
+                            VStack(spacing: 12) {
+                                Button(action: {
+                                    // Export AI insights
+                                }) {
+                                    HStack {
+                                        Image(systemName: "brain.head.profile")
+                                            .foregroundColor(.white)
+                                        
+                                        Text("Export AI Insights")
+                                            .foregroundColor(.white)
+                                        
+                                        Spacer()
+                                    }
+                                    .padding()
+                                    .background( in: RoundedRectangle(cornerRadius: 12))
+                                }
+                                
+                                Button(action: {
+                                    // Delete cloud data
+                                }) {
+                                    HStack {
+                                        Image(systemName: "trash")
+                                            .foregroundColor(.red)
+                                        
+                                        Text("Delete Cloud Data")
+                                            .foregroundColor(.red)
+                                        
+                                        Spacer()
+                                    }
+                                    .padding()
+                                    .background( in: RoundedRectangle(cornerRadius: 12))
+                                }
                             }
                         }
                         .padding()

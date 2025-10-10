@@ -1,4 +1,159 @@
 import SwiftUI
+import Foundation
+
+// MARK: - Smart Prompts Section
+@available(iOS 18.0, *)
+struct SmartPromptsSection: View {
+    let content: String
+    let mood: Mood
+    let previousEntries: [JournalEntry]
+    
+    @State private var prompts: [String] = []
+    @State private var isLoading = false
+    @State private var selectedPrompt: String?
+    
+    private let cloudAIService = CloudAIService()
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "lightbulb.fill")
+                    .font(.caption)
+                    .foregroundColor(.yellow)
+                
+                Text("Smart Prompts")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white.opacity(0.8))
+                
+                Spacer()
+                
+                if isLoading {
+                    ProgressView()
+                        .scaleEffect(0.7)
+                }
+            }
+            
+            if prompts.isEmpty && !isLoading {
+                Button(action: generatePrompts) {
+                    HStack {
+                        Image(systemName: "sparkles")
+                            .font(.caption)
+                        
+                        Text("Generate Prompts")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                    }
+                    .foregroundColor(.blue)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(
+                        Capsule()
+                            .fill(.blue.opacity(0.2))
+                    )
+                }
+            }
+            
+            if !prompts.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(prompts, id: \.self) { prompt in
+                            PromptCard(
+                                prompt: prompt,
+                                isSelected: selectedPrompt == prompt
+                            ) {
+                                selectedPrompt = prompt
+                                // Insert prompt into content
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.blue.opacity(0.1))
+        )
+    }
+    
+    private func generatePrompts() {
+        isLoading = true
+        
+        Task {
+            do {
+                let currentEntry = JournalEntry(content: content, mood: mood)
+                prompts = try await cloudAIService.generateContextualPrompts(
+                    for: currentEntry,
+                    previousEntries: Array(previousEntries.prefix(5))
+                )
+            } catch {
+                // Fallback to local prompts
+                prompts = generateLocalPrompts()
+            }
+            
+            isLoading = false
+        }
+    }
+    
+    private func generateLocalPrompts() -> [String] {
+        var localPrompts: [String] = []
+        
+        // Mood-based prompts
+        switch mood {
+        case .happy:
+            localPrompts.append("What made this moment special?")
+            localPrompts.append("How can you recreate this feeling?")
+        case .sad:
+            localPrompts.append("What support do you need right now?")
+            localPrompts.append("What would help you feel better?")
+        case .anxious:
+            localPrompts.append("What are you worried about?")
+            localPrompts.append("What can you control in this situation?")
+        case .grateful:
+            localPrompts.append("Who or what are you grateful for?")
+            localPrompts.append("How has this impacted your life?")
+        default:
+            localPrompts.append("What else happened today?")
+            localPrompts.append("How are you feeling about this?")
+        }
+        
+        // Content-based prompts
+        if content.count < 100 {
+            localPrompts.append("Can you add more details?")
+        }
+        
+        if !content.contains("I") {
+            localPrompts.append("How did this make you feel personally?")
+        }
+        
+        return Array(localPrompts.prefix(4))
+    }
+}
+
+// MARK: - Prompt Card
+struct PromptCard: View {
+    let prompt: String
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Text(prompt)
+                .font(.caption)
+                .foregroundColor(isSelected ? .white : .primary)
+                .multilineTextAlignment(.leading)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(isSelected ? .blue : .white.opacity(0.2))
+                )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
 
 // MARK: - New Entry View
 struct NewEntryView: View {
@@ -12,6 +167,15 @@ struct NewEntryView: View {
     @State private var newTag = ""
     @State private var isGeneratingInsights = false
     @State private var showingMoodPicker = false
+    
+    // New dynamic AI states
+    @State private var aiService = RealAIService()
+    @State private var detectedSentiment: AIInsights.Sentiment = .neutral
+    @State private var suggestedMood: Mood?
+    @State private var suggestedTags: [String] = []
+    @State private var isAnalyzing = false
+    @State private var showMoodSuggestion = false
+    @State private var analysisTask: Task<Void, Never>?
     
     var body: some View {
         NavigationView {
@@ -36,9 +200,58 @@ struct NewEntryView: View {
                         
                         // Mood Selector
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("How are you feeling?")
-                                .font(.headline)
-                                .foregroundColor(.white)
+                            HStack {
+                                Text("How are you feeling?")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                
+                                if isAnalyzing {
+                                    ProgressView()
+                                        .scaleEffect(0.7)
+                                        .padding(.leading, 8)
+                                }
+                            }
+                            
+                            // AI Mood Suggestion Banner
+                            if showMoodSuggestion, let suggested = suggestedMood {
+                                HStack {
+                                    Image(systemName: "sparkles")
+                                        .foregroundColor(.yellow)
+                                    
+                                    Text("AI suggests: \(suggested.emoji) \(suggested.rawValue.capitalized)")
+                                        .font(.caption)
+                                        .foregroundColor(.white)
+                                    
+                                    Spacer()
+                                    
+                                    Button("Apply") {
+                                        selectedMood = suggested
+                                        showMoodSuggestion = false
+                                    }
+                                    .font(.caption)
+                                    .foregroundColor(.blue)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 4)
+                                    .background(
+                                        Capsule()
+                                            .fill(.white.opacity(0.2))
+                                    )
+                                    
+                                    Button(action: {
+                                        showMoodSuggestion = false
+                                    }) {
+                                        Image(systemName: "xmark")
+                                            .font(.caption2)
+                                            .foregroundColor(.white.opacity(0.6))
+                                    }
+                                }
+                                .padding()
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(.blue.opacity(0.2))
+                                )
+                                .transition(.move(edge: .top).combined(with: .opacity))
+                            }
                             
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 12) {
@@ -70,103 +283,206 @@ struct NewEntryView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("What's on your mind?")
                                 .font(.headline)
+                                .fontWeight(.semibold)
                                 .foregroundColor(.white)
                             
+                            // Main content area - light gray like in the image
                             ZStack(alignment: .topLeading) {
                                 RoundedRectangle(cornerRadius: 12)
-                                    .fill()
+                                    .fill(.gray.opacity(0.3))
                                     .frame(minHeight: 200)
                                 
-                                if content.isEmpty {
-                                    Text("Write your thoughts here...")
-                                        .foregroundColor(.white.opacity(0.6))
+                                VStack(alignment: .leading, spacing: 0) {
+                                    // Sentiment indicator bar
+                                    if !content.isEmpty && content.count > 20 {
+                                        HStack {
+                                            Image(systemName: sentimentIcon(detectedSentiment))
+                                                .font(.caption2)
+                                                .foregroundColor(sentimentColor(detectedSentiment))
+                                            
+                                            Text(detectedSentiment.rawValue.capitalized)
+                                                .font(.caption2)
+                                                .foregroundColor(.black)
+                                            
+                                            Spacer()
+                                        }
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(.white.opacity(0.7))
+                                    }
+                                    
+                                    TextEditor(text: $content)
+                                        .scrollContentBackground(.hidden)
+                                        .background(.clear)
+                                        .foregroundColor(.black)
+                                        .font(.body)
                                         .padding()
+                                        .onChange(of: content) { oldValue, newValue in
+                                            analyzeContentDebounced()
+                                        }
+                                        .overlay(
+                                            Group {
+                                                if content.isEmpty {
+                                                    Text("Write your thoughts here...")
+                                                        .foregroundColor(.gray.opacity(0.6))
+                                                        .font(.body)
+                                                        .padding()
+                                                }
+                                            }
+                                        )
                                 }
-                                
-                                TextEditor(text: $content)
-                                    .scrollContentBackground(.hidden)
-                                    .background(.clear)
-                                    .foregroundColor(.white)
-                                    .padding()
                             }
-                        }
-                        
-                        // Tags Input
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Tags")
-                                .font(.headline)
-                                .foregroundColor(.white)
                             
+                            // Separate tag input - also light gray
                             HStack {
                                 TextField("Add a tag...", text: $newTag)
                                     .textFieldStyle(PlainTextFieldStyle())
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.black)
+                                    .padding()
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .fill(.gray.opacity(0.3))
+                                    )
                                     .onSubmit {
                                         addTag()
                                     }
                                 
-                                Button("Add") {
-                                    addTag()
+                                Button(action: addTag) {
+                                    Image(systemName: "plus.circle.fill")
+                                        .font(.title2)
+                                        .foregroundColor(.blue)
                                 }
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .background( in: RoundedRectangle(cornerRadius: 8))
+                                .disabled(newTag.trimmingCharacters(in: .whitespaces).isEmpty)
                             }
-                            .padding()
-                            .background( in: RoundedRectangle(cornerRadius: 12))
                             
+                            // Tags display
                             if !tags.isEmpty {
                                 ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack {
+                                    HStack(spacing: 8) {
                                         ForEach(tags, id: \.self) { tag in
-                                            HStack {
-                                                Text("#\(tag)")
+                                            HStack(spacing: 6) {
+                                                Image(systemName: "folder.fill")
                                                     .font(.caption)
-                                                    .foregroundColor(.white)
+                                                    .foregroundColor(.blue)
+                                                
+                                                Text(tag)
+                                                    .font(.caption)
+                                                    .foregroundColor(.black)
                                                 
                                                 Button(action: {
                                                     tags.removeAll { $0 == tag }
                                                 }) {
                                                     Image(systemName: "xmark")
                                                         .font(.caption2)
-                                                        .foregroundColor(.white.opacity(0.6))
+                                                        .foregroundColor(.gray)
                                                 }
                                             }
                                             .padding(.horizontal, 8)
                                             .padding(.vertical, 4)
-                                            .background( in: RoundedRectangle(cornerRadius: 8))
+                                            .background(
+                                                Capsule()
+                                                    .fill(.white.opacity(0.8))
+                                            )
                                         }
                                     }
                                     .padding(.horizontal)
                                 }
                             }
-                        }
-                        
-                        // AI Insights Button
-                        if journalManager.settings.enableAIInsights {
-                            Button(action: {
-                                generateInsights()
-                            }) {
-                                HStack {
-                                    if isGeneratingInsights {
-                                        ProgressView()
-                                            .scaleEffect(0.8)
-                                            .tint(.white)
-                                    } else {
-                                        Image(systemName: "brain.head.profile")
+                            
+                            // AI Suggested Tags
+                            if !suggestedTags.isEmpty {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    HStack {
+                                        Image(systemName: "sparkles")
+                                            .font(.caption)
+                                            .foregroundColor(.yellow)
+                                        
+                                        Text("Suggested Tags")
+                                            .font(.caption)
+                                            .fontWeight(.semibold)
+                                            .foregroundColor(.white)
                                     }
                                     
-                                    Text(isGeneratingInsights ? "Generating Insights..." : "Generate AI Insights")
-                                        .fontWeight(.medium)
+                                    ScrollView(.horizontal, showsIndicators: false) {
+                                        HStack(spacing: 8) {
+                                            ForEach(suggestedTags, id: \.self) { tag in
+                                                Button(action: {
+                                                    tags.append(tag)
+                                                    suggestedTags.removeAll { $0 == tag }
+                                                }) {
+                                                    HStack(spacing: 6) {
+                                                        Image(systemName: "plus.circle.fill")
+                                                            .font(.caption2)
+                                                            .foregroundColor(.blue)
+                                                        
+                                                        Text(tag)
+                                                            .font(.caption)
+                                                            .foregroundColor(.black)
+                                                    }
+                                                    .padding(.horizontal, 8)
+                                                    .padding(.vertical, 4)
+                                                    .background(
+                                                        Capsule()
+                                                            .fill(.white.opacity(0.9))
+                                                            .overlay(
+                                                                Capsule()
+                                                                    .stroke(.blue.opacity(0.3), lineWidth: 1)
+                                                            )
+                                                    )
+                                                }
+                                            }
+                                        }
+                                        .padding(.horizontal)
+                                    }
                                 }
-                                .foregroundColor(.white)
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background( in: RoundedRectangle(cornerRadius: 12))
                             }
-                            .disabled(isGeneratingInsights || content.isEmpty)
                         }
+                        
+        // AI Insights and Smart Prompts
+        if journalManager.settings.enableAIInsights {
+            VStack(spacing: 12) {
+                // Refresh Insights Button
+                HStack(spacing: 12) {
+                    Button(action: {
+                        Task {
+                            await analyzeContent()
+                        }
+                    }) {
+                        HStack {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.body)
+                            
+                            Text("Refresh Insights")
+                                .font(.body)
+                                .fontWeight(.medium)
+                            
+                            if isAnalyzing {
+                                ProgressView()
+                                    .scaleEffect(0.8)
+                                    .padding(.leading, 4)
+                            }
+                        }
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(.blue.opacity(0.3))
+                        )
+                    }
+                    .disabled(content.isEmpty || isAnalyzing)
+                }
+                
+                // Smart Prompts Section
+                if journalManager.settings.enableSmartPrompts && !content.isEmpty {
+                    SmartPromptsSection(
+                        content: content,
+                        mood: selectedMood,
+                        previousEntries: journalManager.entries
+                    )
+                }
+            }
+        }
                     }
                     .padding()
                 }
@@ -197,6 +513,72 @@ struct NewEntryView: View {
         if !trimmedTag.isEmpty && !tags.contains(trimmedTag) {
             tags.append(trimmedTag)
             newTag = ""
+        }
+    }
+    
+    // MARK: - Dynamic AI Analysis Functions
+    private func analyzeContentDebounced() {
+        // Cancel previous task
+        analysisTask?.cancel()
+        
+        // Create new task with delay
+        analysisTask = Task {
+            try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
+            
+            guard !Task.isCancelled else { return }
+            
+            await analyzeContent()
+        }
+    }
+    
+    private func analyzeContent() async {
+        guard !content.isEmpty, content.count > 20 else {
+            detectedSentiment = .neutral
+            suggestedMood = nil
+            suggestedTags = []
+            return
+        }
+        
+        isAnalyzing = true
+        
+        // Real-time sentiment analysis
+        detectedSentiment = aiService.analyzeSentiment(text: content)
+        
+        // Suggest mood based on sentiment
+        suggestedMood = moodFromSentiment(detectedSentiment)
+        showMoodSuggestion = (suggestedMood != selectedMood)
+        
+        // Extract suggested tags
+        let topics = aiService.extractTopics(from: content)
+        suggestedTags = topics.filter { !tags.contains($0) }
+        
+        isAnalyzing = false
+    }
+    
+    private func moodFromSentiment(_ sentiment: AIInsights.Sentiment) -> Mood {
+        switch sentiment {
+        case .positive: return .happy
+        case .negative: return .sad
+        case .mixed: return .anxious
+        case .neutral: return .neutral
+        }
+    }
+    
+    private func sentimentIcon(_ sentiment: AIInsights.Sentiment) -> String {
+        switch sentiment {
+        case .positive: return "face.smiling"
+        case .negative: return "face.dashed"
+        case .mixed: return "face.dashed.fill"
+        case .neutral: return "minus.circle"
+        }
+    }
+    
+    private func sentimentColor(_ sentiment: AIInsights.Sentiment) -> Color {
+        switch sentiment {
+        case .positive: return .green
+        case .negative: return .red
+        case .mixed: return .orange
+        case .neutral: return .gray
         }
     }
     
@@ -247,6 +629,8 @@ struct EntryDetailView: View {
     @State private var editedMood: Mood
     @State private var editedTags: [String]
     @State private var newTag = ""
+    @State private var entrySummary: String?
+    @State private var isGeneratingSummary = false
     
     init(entry: JournalEntry) {
         self.entry = entry
@@ -393,6 +777,43 @@ struct EntryDetailView: View {
                             .background( in: RoundedRectangle(cornerRadius: 16))
                         }
                         
+                        // Text Summary
+                        if entry.content.count > 500 {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("Summary")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                
+                                if let summary = entrySummary {
+                                    Text(summary)
+                                        .font(.body)
+                                        .foregroundColor(.white.opacity(0.9))
+                                        .padding()
+                                        .background(in: RoundedRectangle(cornerRadius: 12))
+                                } else {
+                                    Button(action: {
+                                        Task {
+                                            await generateSummary()
+                                        }
+                                    }) {
+                                        HStack {
+                                            if isGeneratingSummary {
+                                                ProgressView()
+                                                    .scaleEffect(0.8)
+                                            }
+                                            Text(isGeneratingSummary ? "Generating..." : "Generate Summary")
+                                        }
+                                        .foregroundColor(.white)
+                                        .padding()
+                                        .frame(maxWidth: .infinity)
+                                        .background(in: RoundedRectangle(cornerRadius: 12))
+                                    }
+                                }
+                            }
+                            .padding()
+                            .background(in: RoundedRectangle(cornerRadius: 16))
+                        }
+                        
                         // Stats
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Statistics")
@@ -451,6 +872,19 @@ struct EntryDetailView: View {
             EditEntryView(entry: entry)
                 .environmentObject(journalManager)
         }
+    }
+    
+    private func generateSummary() async {
+        isGeneratingSummary = true
+        let aiService = RealAIService()
+        
+        do {
+            entrySummary = try await aiService.summarizeText(entry.content)
+        } catch {
+            entrySummary = "Unable to generate summary"
+        }
+        
+        isGeneratingSummary = false
     }
 }
 

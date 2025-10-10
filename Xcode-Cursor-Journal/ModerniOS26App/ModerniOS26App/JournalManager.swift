@@ -82,40 +82,22 @@ class JournalManager: ObservableObject {
     
     // MARK: - AI Features
     func generateAIInsights(for entry: JournalEntry) async -> AIInsights {
-        // Simulate AI processing
-        try? await Task.sleep(nanoseconds: 1_500_000_000)
+        let aiService = RealAIService()
         
         let words = entry.content.split(separator: " ").count
-        let readingTime = max(1, words / 200) // Average reading speed
+        let readingTime = max(1, words / 200)
         
-        // Simulate sentiment analysis
-        let sentiment: AIInsights.Sentiment = {
-            let positiveWords = ["happy", "great", "amazing", "love", "wonderful", "excited", "grateful"]
-            let negativeWords = ["sad", "angry", "terrible", "hate", "awful", "anxious", "worried"]
-            
-            let content = entry.content.lowercased()
-            let positiveCount = positiveWords.filter { content.contains($0) }.count
-            let negativeCount = negativeWords.filter { content.contains($0) }.count
-            
-            if positiveCount > negativeCount {
-                return .positive
-            } else if negativeCount > positiveCount {
-                return .negative
-            } else if positiveCount > 0 && negativeCount > 0 {
-                return .mixed
-            } else {
-                return .neutral
-            }
-        }()
+        // Real sentiment analysis using Natural Language framework
+        let sentiment = aiService.analyzeSentiment(text: entry.content)
         
-        // Simulate topic extraction
-        let keyTopics = extractTopics(from: entry.content)
+        // Real topic extraction
+        let keyTopics = aiService.extractTopics(from: entry.content)
         
-        // Simulate writing style analysis
+        // Writing style analysis (keep existing logic)
         let writingStyle = analyzeWritingStyle(entry.content)
         
-        // Generate suggestions
-        let suggestions = generateSuggestions(for: entry)
+        // Generate suggestions based on real sentiment
+        let suggestions = generateSuggestions(for: entry, sentiment: sentiment)
         
         return AIInsights(
             sentiment: sentiment,
@@ -125,6 +107,263 @@ class JournalManager: ObservableObject {
             wordCount: words,
             readingTime: readingTime
         )
+    }
+    
+    // MARK: - Growth Tracking
+    func analyzePersonalGrowth() async -> [GrowthMetric] {
+        let patternEngine = PatternAnalysisEngine()
+        return await patternEngine.analyzeGrowthMetrics(entries: entries)
+    }
+    
+    func getGrowthInsights() -> GrowthInsights {
+        let growthMetrics = calculateGrowthMetrics()
+        let achievements = detectAchievements()
+        let areasForImprovement = identifyAreasForImprovement()
+        let overallGrowth = calculateOverallGrowthScore()
+        
+        return GrowthInsights(
+            overallGrowth: overallGrowth,
+            metrics: growthMetrics,
+            achievements: achievements,
+            areasForImprovement: areasForImprovement,
+            growthTrajectory: determineGrowthTrajectory()
+        )
+    }
+    
+    private func calculateGrowthMetrics() -> [GrowthMetric] {
+        var metrics: [GrowthMetric] = []
+        
+        // Emotional Stability
+        let emotionalStability = calculateEmotionalStability()
+        metrics.append(emotionalStability)
+        
+        // Gratitude
+        let gratitude = calculateGratitude()
+        metrics.append(gratitude)
+        
+        // Self-Reflection
+        let selfReflection = calculateSelfReflection()
+        metrics.append(selfReflection)
+        
+        // Resilience
+        let resilience = calculateResilience()
+        metrics.append(resilience)
+        
+        // Goal Orientation
+        let goalOrientation = calculateGoalOrientation()
+        metrics.append(goalOrientation)
+        
+        // Social Connection
+        let socialConnection = calculateSocialConnection()
+        metrics.append(socialConnection)
+        
+        return metrics
+    }
+    
+    private func calculateEmotionalStability() -> GrowthMetric {
+        let moods = entries.map { $0.mood }
+        let moodChanges = zip(moods, moods.dropFirst()).map { $0 != $1 ? 1 : 0 }.reduce(0, +)
+        let stability = 1.0 - (Double(moodChanges) / Double(max(1, moods.count - 1)))
+        
+        let trend: GrowthTrend = stability > 0.7 ? .improving : stability > 0.4 ? .stable : .declining
+        
+        return GrowthMetric(
+            metricType: .emotionalStability,
+            value: stability,
+            trend: trend,
+            period: .monthly,
+            insights: ["Your emotional stability is \(trend.rawValue)"]
+        )
+    }
+    
+    private func calculateGratitude() -> GrowthMetric {
+        let gratitudeKeywords = ["grateful", "thankful", "appreciate", "blessed", "fortunate"]
+        let gratitudeCount = entries.filter { entry in
+            gratitudeKeywords.contains { keyword in
+                entry.content.lowercased().contains(keyword)
+            }
+        }.count
+        
+        let gratitudeScore = Double(gratitudeCount) / Double(max(1, entries.count))
+        let trend: GrowthTrend = gratitudeScore > 0.3 ? .improving : gratitudeScore > 0.1 ? .stable : .declining
+        
+        return GrowthMetric(
+            metricType: .gratitude,
+            value: gratitudeScore,
+            trend: trend,
+            period: .monthly,
+            insights: ["You express gratitude in \(Int(gratitudeScore * 100))% of your entries"]
+        )
+    }
+    
+    private func calculateSelfReflection() -> GrowthMetric {
+        let reflectionKeywords = ["think", "realize", "understand", "learn", "reflect", "consider"]
+        let reflectionCount = entries.filter { entry in
+            reflectionKeywords.contains { keyword in
+                entry.content.lowercased().contains(keyword)
+            }
+        }.count
+        
+        let reflectionScore = Double(reflectionCount) / Double(max(1, entries.count))
+        let trend: GrowthTrend = reflectionScore > 0.4 ? .improving : reflectionScore > 0.2 ? .stable : .declining
+        
+        return GrowthMetric(
+            metricType: .selfReflection,
+            value: reflectionScore,
+            trend: trend,
+            period: .monthly,
+            insights: ["You engage in self-reflection in \(Int(reflectionScore * 100))% of your entries"]
+        )
+    }
+    
+    private func calculateResilience() -> GrowthMetric {
+        let resilienceKeywords = ["overcome", "persevere", "bounce back", "recover", "strength", "challenge"]
+        let resilienceCount = entries.filter { entry in
+            resilienceKeywords.contains { keyword in
+                entry.content.lowercased().contains(keyword)
+            }
+        }.count
+        
+        let resilienceScore = Double(resilienceCount) / Double(max(1, entries.count))
+        let trend: GrowthTrend = resilienceScore > 0.2 ? .improving : resilienceScore > 0.1 ? .stable : .declining
+        
+        return GrowthMetric(
+            metricType: .resilience,
+            value: resilienceScore,
+            trend: trend,
+            period: .monthly,
+            insights: ["You demonstrate resilience in \(Int(resilienceScore * 100))% of your entries"]
+        )
+    }
+    
+    private func calculateGoalOrientation() -> GrowthMetric {
+        let goalKeywords = ["goal", "target", "plan", "achieve", "accomplish", "objective"]
+        let goalCount = entries.filter { entry in
+            goalKeywords.contains { keyword in
+                entry.content.lowercased().contains(keyword)
+            }
+        }.count
+        
+        let goalScore = Double(goalCount) / Double(max(1, entries.count))
+        let trend: GrowthTrend = goalScore > 0.3 ? .improving : goalScore > 0.1 ? .stable : .declining
+        
+        return GrowthMetric(
+            metricType: .goalOrientation,
+            value: goalScore,
+            trend: trend,
+            period: .monthly,
+            insights: ["You discuss goals in \(Int(goalScore * 100))% of your entries"]
+        )
+    }
+    
+    private func calculateSocialConnection() -> GrowthMetric {
+        let socialKeywords = ["friend", "family", "together", "social", "connect", "relationship"]
+        let socialCount = entries.filter { entry in
+            socialKeywords.contains { keyword in
+                entry.content.lowercased().contains(keyword)
+            }
+        }.count
+        
+        let socialScore = Double(socialCount) / Double(max(1, entries.count))
+        let trend: GrowthTrend = socialScore > 0.4 ? .improving : socialScore > 0.2 ? .stable : .declining
+        
+        return GrowthMetric(
+            metricType: .socialConnection,
+            value: socialScore,
+            trend: trend,
+            period: .monthly,
+            insights: ["You mention social connections in \(Int(socialScore * 100))% of your entries"]
+        )
+    }
+    
+    private func detectAchievements() -> [Achievement] {
+        var achievements: [Achievement] = []
+        
+        // Streak achievement
+        if stats.streakDays >= 7 {
+            achievements.append(Achievement(
+                title: "Week Streak",
+                description: "You've journaled for \(stats.streakDays) days straight!",
+                achievedAt: Date(),
+                category: .personal,
+                impact: 0.8
+            ))
+        }
+        
+        // Word count achievement
+        if stats.totalWords >= 10000 {
+            achievements.append(Achievement(
+                title: "Word Master",
+                description: "You've written over 10,000 words in your journal!",
+                achievedAt: Date(),
+                category: .creative,
+                impact: 0.7
+            ))
+        }
+        
+        // Positive mood achievement
+        let positiveEntries = entries.filter { $0.mood == .happy || $0.mood == .grateful || $0.mood == .excited }
+        if positiveEntries.count >= 10 {
+            achievements.append(Achievement(
+                title: "Positive Thinker",
+                description: "You've had \(positiveEntries.count) positive entries!",
+                achievedAt: Date(),
+                category: .emotional,
+                impact: 0.9
+            ))
+        }
+        
+        return achievements
+    }
+    
+    private func identifyAreasForImprovement() -> [String] {
+        var areas: [String] = []
+        
+        // Check for low gratitude
+        let gratitudeScore = calculateGratitude().value
+        if gratitudeScore < 0.1 {
+            areas.append("Consider expressing more gratitude in your entries")
+        }
+        
+        // Check for low self-reflection
+        let reflectionScore = calculateSelfReflection().value
+        if reflectionScore < 0.2 {
+            areas.append("Try to reflect more on your experiences and feelings")
+        }
+        
+        // Check for low social connection
+        let socialScore = calculateSocialConnection().value
+        if socialScore < 0.2 {
+            areas.append("Consider writing more about your relationships and social connections")
+        }
+        
+        // Check for short entries
+        let averageWords = stats.averageWordsPerEntry
+        if averageWords < 50 {
+            areas.append("Try writing longer, more detailed entries")
+        }
+        
+        return areas
+    }
+    
+    private func calculateOverallGrowthScore() -> Double {
+        let metrics = calculateGrowthMetrics()
+        let averageScore = metrics.map { $0.value }.reduce(0, +) / Double(metrics.count)
+        return averageScore
+    }
+    
+    private func determineGrowthTrajectory() -> GrowthTrend {
+        let metrics = calculateGrowthMetrics()
+        let improvingCount = metrics.filter { $0.trend == .improving }.count
+        let decliningCount = metrics.filter { $0.trend == .declining }.count
+        
+        if improvingCount > decliningCount {
+            return .improving
+        } else if decliningCount > improvingCount {
+            return .declining
+        } else {
+            return .stable
+        }
     }
     
     private func extractTopics(from content: String) -> [String] {
@@ -156,7 +395,7 @@ class JournalManager: ObservableObject {
         }
     }
     
-    private func generateSuggestions(for entry: JournalEntry) -> [String] {
+    private func generateSuggestions(for entry: JournalEntry, sentiment: AIInsights.Sentiment) -> [String] {
         var suggestions: [String] = []
         
         if entry.content.count < 100 {
@@ -171,12 +410,18 @@ class JournalManager: ObservableObject {
             suggestions.append("A descriptive title can help you remember this entry")
         }
         
-        if entry.mood == .sad || entry.mood == .anxious {
+        // Sentiment-based suggestions
+        switch sentiment {
+        case .negative:
             suggestions.append("Consider writing about what you're grateful for today")
-        }
-        
-        if entry.mood == .happy || entry.mood == .excited {
+            suggestions.append("Reflect on what you learned from this experience")
+        case .positive:
             suggestions.append("This seems like a great day! What made it special?")
+            suggestions.append("Consider noting what contributed to these positive feelings")
+        case .mixed:
+            suggestions.append("You seem to have mixed feelings. Try exploring both sides")
+        case .neutral:
+            suggestions.append("Try adding more emotional context to your entry")
         }
         
         return suggestions

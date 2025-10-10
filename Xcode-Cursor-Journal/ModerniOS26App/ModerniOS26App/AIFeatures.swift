@@ -1,14 +1,94 @@
 import SwiftUI
 import Foundation
+import NaturalLanguage
 
-// MARK: - AI Features for iOS 26
+// MARK: - Real AI Service for iOS 26
 @available(iOS 18.0, *)
 @MainActor
-class AIService: ObservableObject {
+class RealAIService: ObservableObject {
     @Published var isProcessing = false
     @Published var lastResponse = ""
     
-    // Simulate AI-powered code generation
+    // Foundation Models for advanced AI features (iOS 26+)
+    private var languageModel: Any? // Using Any to avoid compilation issues with FoundationModels
+    
+    init() {
+        // Initialize Foundation Models if available
+        // Note: FoundationModels framework may not be available in current Xcode versions
+        // This will gracefully fall back to Natural Language framework features
+    }
+    
+    // Real sentiment analysis using Natural Language framework
+    func analyzeSentiment(text: String) -> AIInsights.Sentiment {
+        let tagger = NLTagger(tagSchemes: [.sentimentScore])
+        tagger.string = text
+        
+        var sentimentScore: Double = 0
+        tagger.enumerateTags(in: text.startIndex..<text.endIndex, 
+                            unit: .paragraph, 
+                            scheme: .sentimentScore) { tag, _ in
+            if let tag = tag, 
+               let score = Double(tag.rawValue) {
+                sentimentScore = score
+            }
+            return true
+        }
+        
+        if sentimentScore > 0.3 {
+            return .positive
+        } else if sentimentScore < -0.3 {
+            return .negative
+        } else if abs(sentimentScore) < 0.1 {
+            return .neutral
+        } else {
+            return .mixed
+        }
+    }
+    
+    // Real topic extraction using Natural Language framework
+    func extractTopics(from text: String) -> [String] {
+        let tagger = NLTagger(tagSchemes: [.nameType, .lexicalClass])
+        tagger.string = text
+        
+        var topics: [String] = []
+        let options: NLTagger.Options = [.omitWhitespace, .omitPunctuation]
+        
+        tagger.enumerateTags(in: text.startIndex..<text.endIndex,
+                            unit: .word,
+                            scheme: .nameType,
+                            options: options) { tag, tokenRange in
+            if let tag = tag {
+                let word = String(text[tokenRange])
+                if word.count > 3 && !topics.contains(word) {
+                    topics.append(word)
+                }
+            }
+            return topics.count < 5
+        }
+        
+        return topics
+    }
+    
+    // Text summarization with fallback
+    func summarizeText(_ text: String) async throws -> String {
+        // For now, use extractive summarization as FoundationModels may not be available
+        // In a real iOS 26 environment, this would use FoundationModels
+        return extractiveSummary(text)
+    }
+    
+    // Fallback extractive summarization
+    private func extractiveSummary(_ text: String) -> String {
+        let sentences = text.components(separatedBy: CharacterSet(charactersIn: ".!?"))
+            .filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
+        
+        if sentences.count <= 2 {
+            return text
+        }
+        
+        return sentences.prefix(2).joined(separator: ". ") + "."
+    }
+    
+    // Legacy methods for compatibility
     func generateCode(prompt: String) async -> String {
         isProcessing = true
         
@@ -31,7 +111,7 @@ class AIService: ObservableObject {
                         .foregroundColor(.gray)
                 }
                 .padding()
-                .background( in: RoundedRectangle(cornerRadius: 12))
+                .background(in: RoundedRectangle(cornerRadius: 12))
             }
         }
         """
@@ -42,7 +122,6 @@ class AIService: ObservableObject {
         return response
     }
     
-    // Simulate visual intelligence processing
     func processImage(_ imageData: Data) async -> String {
         isProcessing = true
         
@@ -54,6 +133,24 @@ class AIService: ObservableObject {
         isProcessing = false
         
         return response
+    }
+}
+
+// MARK: - Availability Checks and Fallbacks
+@available(iOS 18.0, *)
+extension RealAIService {
+    var isFoundationModelsAvailable: Bool {
+        // In a real iOS 26 environment, this would check FoundationModels availability
+        // For now, return false as FoundationModels may not be available
+        return false
+    }
+    
+    func getAvailabilityMessage() -> String {
+        if isFoundationModelsAvailable {
+            return "AI features fully available"
+        } else {
+            return "Using Natural Language AI features (Foundation Models unavailable)"
+        }
     }
 }
 

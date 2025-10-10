@@ -168,6 +168,345 @@ enum JournalTheme: String, CaseIterable, Codable {
     }
 }
 
+// MARK: - Pattern Analysis Models
+struct MoodPattern: Codable {
+    let mood: Mood
+    let frequency: Double
+    let trends: [String: Double] // time period -> frequency
+    let triggers: [String] // topics that trigger this mood
+    let lastOccurrence: Date
+}
+
+struct ThemePattern: Codable {
+    let topic: String
+    let frequency: Int
+    let firstMention: Date
+    let lastMention: Date
+    let associatedMoods: [Mood]
+    let evolution: [ThemeEvolution] // how perspective changed over time
+}
+
+struct ThemeEvolution: Codable {
+    let date: Date
+    let sentiment: AIInsights.Sentiment
+    let keyPhrases: [String]
+    let mood: Mood
+}
+
+enum RelationshipType: String, Codable, CaseIterable {
+    case family = "family"
+    case work = "work"
+    case friends = "friends"
+    case romantic = "romantic"
+    case other = "other"
+}
+
+struct RelationshipPattern: Codable {
+    let personName: String
+    let relationshipType: RelationshipType
+    let frequency: Int
+    let associatedMoods: [Mood]
+    let emotionalContext: String
+    let lastMention: Date
+    let sentimentTrend: Double // positive/negative trend over time
+}
+
+struct GrowthMetric: Codable {
+    let metricType: GrowthMetricType
+    let value: Double
+    let trend: GrowthTrend
+    let period: TimePeriod
+    let insights: [String]
+}
+
+enum GrowthMetricType: String, Codable, CaseIterable {
+    case emotionalStability = "emotional_stability"
+    case gratitude = "gratitude"
+    case selfReflection = "self_reflection"
+    case resilience = "resilience"
+    case goalOrientation = "goal_orientation"
+    case socialConnection = "social_connection"
+}
+
+enum GrowthTrend: String, Codable {
+    case improving = "improving"
+    case stable = "stable"
+    case declining = "declining"
+    case fluctuating = "fluctuating"
+}
+
+enum TimePeriod: String, Codable, CaseIterable {
+    case weekly = "weekly"
+    case monthly = "monthly"
+    case quarterly = "quarterly"
+    case yearly = "yearly"
+}
+
+// MARK: - Pattern Insights
+struct PatternInsights: Codable {
+    let moodPatterns: [MoodPattern]
+    let themePatterns: [ThemePattern]
+    let writingStyleEvolution: WritingStyleEvolution
+    let emotionalCycles: [EmotionalCycle]
+}
+
+struct WritingStyleEvolution: Codable {
+    let vocabularyRichness: Double
+    let sentenceComplexity: Double
+    let emotionalExpression: Double
+    let authenticityScore: Double
+    let trend: GrowthTrend
+}
+
+struct EmotionalCycle: Codable {
+    let cycleType: CycleType
+    let duration: Int // in days
+    let pattern: [Mood]
+    let triggers: [String]
+    let recommendations: [String]
+}
+
+enum CycleType: String, Codable {
+    case weekly = "weekly"
+    case monthly = "monthly"
+    case seasonal = "seasonal"
+    case stress = "stress"
+    case growth = "growth"
+}
+
+struct GrowthInsights: Codable {
+    let overallGrowth: Double
+    let metrics: [GrowthMetric]
+    let achievements: [Achievement]
+    let areasForImprovement: [String]
+    let growthTrajectory: GrowthTrend
+}
+
+struct Achievement: Codable {
+    let title: String
+    let description: String
+    let achievedAt: Date
+    let category: AchievementCategory
+    let impact: Double
+}
+
+enum AchievementCategory: String, Codable, CaseIterable {
+    case emotional = "emotional"
+    case personal = "personal"
+    case social = "social"
+    case professional = "professional"
+    case health = "health"
+    case creative = "creative"
+}
+
+struct Recommendation: Codable {
+    let type: RecommendationType
+    let title: String
+    let description: String
+    let priority: Priority
+    let actionableSteps: [String]
+    let expectedOutcome: String
+}
+
+enum RecommendationType: String, Codable, CaseIterable {
+    case reflection = "reflection"
+    case action = "action"
+    case mindfulness = "mindfulness"
+    case social = "social"
+    case goal = "goal"
+    case wellness = "wellness"
+}
+
+enum Priority: String, Codable, CaseIterable {
+    case low = "low"
+    case medium = "medium"
+    case high = "high"
+    case urgent = "urgent"
+}
+
+struct RelationshipInsights: Codable {
+    let importantPeople: [ImportantPerson]
+    let insights: [String]
+}
+
+struct ImportantPerson: Codable {
+    let name: String
+    let frequency: Int
+    let associatedMoods: [Mood]
+    let relationshipType: RelationshipType
+}
+
+// MARK: - Advanced AI Insights
+struct AdvancedAIInsights: Codable {
+    let patterns: PatternInsights
+    let growth: GrowthInsights
+    let relationships: RelationshipInsights
+    let recommendations: [Recommendation]
+    let generatedAt: Date
+}
+
+struct WritingStyleEvolution: Codable {
+    let vocabularyRichness: Double
+    let sentenceComplexity: Double
+    let emotionalExpression: Double
+    let authenticityScore: Double
+    let trend: GrowthTrend
+}
+
+struct EmotionalCycle: Codable {
+    let cycleType: CycleType
+    let duration: Int // in days
+    let pattern: [Mood]
+    let triggers: [String]
+    let recommendations: [String]
+}
+
+enum CycleType: String, Codable {
+    case weekly = "weekly"
+    case monthly = "monthly"
+    case seasonal = "seasonal"
+    case stress = "stress"
+    case growth = "growth"
+}
+
+struct GrowthInsights: Codable {
+    let overallGrowth: Double
+    let metrics: [GrowthMetric]
+    let achievements: [Achievement]
+    let areasForImprovement: [String]
+    let growthTrajectory: GrowthTrend
+}
+
+struct Achievement: Codable {
+    let title: String
+    let description: String
+    let achievedAt: Date
+    let category: AchievementCategory
+    let impact: Double
+}
+
+enum AchievementCategory: String, Codable, CaseIterable {
+    case emotional = "emotional"
+    case personal = "personal"
+    case social = "social"
+    case professional = "professional"
+    case health = "health"
+    case creative = "creative"
+}
+
+struct Recommendation: Codable {
+    let type: RecommendationType
+    let title: String
+    let description: String
+    let priority: Priority
+    let actionableSteps: [String]
+    let expectedOutcome: String
+}
+
+enum RecommendationType: String, Codable, CaseIterable {
+    case reflection = "reflection"
+    case action = "action"
+    case mindfulness = "mindfulness"
+    case social = "social"
+    case goal = "goal"
+    case wellness = "wellness"
+}
+
+enum Priority: String, Codable, CaseIterable {
+    case low = "low"
+    case medium = "medium"
+    case high = "high"
+    case urgent = "urgent"
+}
+
+// MARK: - Smart Memory Models
+struct SmartMemory: Codable {
+    let id: UUID
+    let title: String
+    let description: String
+    let relatedEntries: [UUID]
+    let memoryType: MemoryType
+    let emotionalWeight: Double
+    let createdAt: Date
+    let lastAccessed: Date
+}
+
+enum MemoryType: String, Codable, CaseIterable {
+    case milestone = "milestone"
+    case relationship = "relationship"
+    case achievement = "achievement"
+    case challenge = "challenge"
+    case insight = "insight"
+    case recurring = "recurring"
+}
+
+// MARK: - Voice Journaling Models
+struct VoiceEntry: Codable {
+    let id: UUID
+    let audioData: Data
+    let transcription: String
+    let detectedEmotion: AIInsights.Sentiment
+    let confidence: Double
+    let duration: TimeInterval
+    let createdAt: Date
+    let convertedToEntry: Bool
+    let relatedEntryId: UUID?
+}
+
+// MARK: - Search Models
+struct SearchQuery: Codable {
+    let query: String
+    let queryType: SearchQueryType
+    let filters: SearchFilters
+    let createdAt: Date
+}
+
+enum SearchQueryType: String, Codable, CaseIterable {
+    case semantic = "semantic"
+    case keyword = "keyword"
+    case mood = "mood"
+    case date = "date"
+    case theme = "theme"
+    case relationship = "relationship"
+}
+
+struct SearchFilters: Codable {
+    let dateRange: DateRange?
+    let moods: [Mood]?
+    let themes: [String]?
+    let relationships: [String]?
+    let sentiment: AIInsights.Sentiment?
+}
+
+struct DateRange: Codable {
+    let startDate: Date
+    let endDate: Date
+}
+
+// MARK: - Privacy Mode
+enum PrivacyMode: String, CaseIterable, Codable {
+    case `private` = "private"
+    case enhanced = "enhanced"
+    
+    var title: String {
+        switch self {
+        case .private:
+            return "Private Mode"
+        case .enhanced:
+            return "Enhanced Mode"
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .private:
+            return "All AI processing happens on your device"
+        case .enhanced:
+            return "Advanced AI features with cloud processing"
+        }
+    }
+}
+
 // MARK: - Journal Settings
 struct JournalSettings: Codable {
     var theme: JournalTheme
@@ -179,6 +518,12 @@ struct JournalSettings: Codable {
     var enableReminders: Bool
     var fontSize: Double
     var enableDarkMode: Bool
+    var privacyMode: PrivacyMode
+    var enableCloudAI: Bool
+    var enableAnalytics: Bool
+    var enableSmartPrompts: Bool
+    var enableWeeklySummaries: Bool
+    var enableRelationshipTracking: Bool
     
     static let `default` = JournalSettings(
         theme: .liquidGlass,
@@ -189,7 +534,13 @@ struct JournalSettings: Codable {
         reminderTime: Calendar.current.date(bySettingHour: 20, minute: 0, second: 0, of: Date()) ?? Date(),
         enableReminders: true,
         fontSize: 16.0,
-        enableDarkMode: true
+        enableDarkMode: true,
+        privacyMode: .enhanced,
+        enableCloudAI: true,
+        enableAnalytics: true,
+        enableSmartPrompts: true,
+        enableWeeklySummaries: true,
+        enableRelationshipTracking: true
     )
 }
 
